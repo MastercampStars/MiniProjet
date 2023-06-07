@@ -1,14 +1,14 @@
 class Map:
-    def __init__(self,size,type):
+    # Constructeur
+    def __init__(self,size,type,elements=[]):
         self.type = type
         self.size = size
-        self.elements = []
-        #creer une matrice de taille size*size
-        self.matrice = [[type for i in range(size)] for j in range(size)]
+        self.elements = elements
+        self.matrice = [[type for x in range(size["x"])] for j in range(size["y"])]
     
     def getMatrice(self):
         return self.matrice
-    
+    # Ajoute un element a la matrice en fonction de sa direction, de sa taille et de sa matrice et de sa position Front
     def addElementToMatrice(self,element):
         if (element.direction == "up"):
             for y in range(element.size["y"]):
@@ -29,27 +29,31 @@ class Map:
         self.matrice[element.Front["y"]][element.Front["x"]] = "f"
         self.matrice[element.Back["y"]][element.Back["x"]] = "b"
         
-    
+    # Recharge la matrice de la map avec tous ses elements
     def reloadMatrice(self):    
-        self.matrice = [[self.type for x in range(self.size)] for y in range(self.size)]
+        self.matrice = [[self.type for x in range(self.size["x"])] for j in range(self.size["y"])]
         for element in self.elements:
             self.addElementToMatrice(element)
     
-    
+    # Ajoute un element a la map
     def addElement(self,element):
         self.elements.append(element)
         self.reloadMatrice()
-        
+    
+    # Supprime un element de la map
     def removeElement(self,element):
         self.elements.remove(element)
         self.reloadMatrice()
         
+    # Copie de la map
+    def copy(self):
+        return Map(self.size,self.type,self.elements.copy())
     
-        
+    # Affichage de la map
     def __str__(self) -> str:
         matrice = ""
-        for y in range(self.size):
-            for x in range(self.size):
+        for y in range(self.size["y"]):
+            for x in range(self.size["x"]):
                 matrice += str(self.matrice[y][x]) + " "
             matrice += "\n"
         return f"Map: {self.type} \n\n{matrice}"
