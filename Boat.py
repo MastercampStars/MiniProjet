@@ -30,8 +30,8 @@ class Boat:
     # Calcule la matrice du bateau en fonction de sa longueure, largeure et de sa direction
     def getMatrice(self):
         matrice = [[self.type for x in range(self.size["x"])] for y in range(self.size["y"])]
-        matrice[0][0] = "F"
-        matrice[-1][-1] = "B"
+        matrice[0] = ["F" for x in range(self.size["x"])]
+        matrice[-1] = ["B" for x in range(self.size["x"])]
         return matrice
     
     # Recalcul la position arrière du bateau à partir de sa direction, de sa position Front et de sa taille
