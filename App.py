@@ -1,8 +1,6 @@
 import pygame
-import cProfile
 from Boat import Boat
 from Map import Map
-from Bullet import Bullet
 
 
 def Main ():
@@ -103,4 +101,4 @@ def Main ():
 
     # Fermeture de Pygame
     pygame.quit()
-cProfile.run('Main()')
+Main()
