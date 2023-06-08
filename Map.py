@@ -26,8 +26,7 @@ class Map:
             for y in range(element.size["y"]):
                 for x in range(element.size["x"]):
                     self.matrice[element.Front["y"]-x][element.Front["x"]+y] = element.matrice[y][x]
-        self.matrice[element.Front["y"]][element.Front["x"]] = "f"
-        self.matrice[element.Back["y"]][element.Back["x"]] = "b"
+
         
     # Recharge la matrice de la map avec tous ses elements
     def reloadMatrice(self):    

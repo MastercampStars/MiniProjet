@@ -44,7 +44,7 @@ class Boat:
         elif(self.direction == "right" or self.direction == "left"):
             return {"x":abs(self.Front["y"]-self.Back["y"])+1,"y":abs(self.Front["x"]-self.Back["x"])+1}
     
-    # Calcule la matrice du bateau en fonction de sa longueure, largeure et de sa direction
+    # Calcule la matrice du bateau en fonction de sa longueure, largeure 
     def getMatrice(self):
         matrice = [[self.type for x in range(self.size["x"])] for y in range(self.size["y"])]
         matrice[0][0] = "F"
@@ -69,7 +69,7 @@ class Boat:
 
     #Deplacement du bateau
     #Calcul la nouvelle position du bateau en fonction de sa direction et de la direction demandée
-    def move(self,direction,vitesse):
+    def move(self,direction,distance):
         self.direction = self.getDirection()
         #le bateau est vers le haut
         newFront = self.Front.copy()
@@ -77,66 +77,66 @@ class Boat:
         if self.direction == "up":
             #le bateau avance vers le haut
             if direction == "up":
-                newFront["y"] -= vitesse
+                newFront["y"] -= distance
             #le bateau tourne vers la gauche
             elif direction == "left":
-                newFront["x"] -= vitesse
+                newFront["x"] -= distance
                 newDirection = "left"
             #le bateau tourne vers la droite
             elif direction == "right":
-                newFront["x"] += vitesse
+                newFront["x"] += distance
                 newDirection = "right"
             #le bateau recule vers le bas
             elif direction == "down":
-                newFront["y"] += vitesse//2
+                newFront["y"] += distance//2
         #le bateau est vers le bas      
         elif newDirection == "down":
             #le bateau avance vers le bas
             if direction == "down":
-                newFront["y"] += vitesse
+                newFront["y"] += distance
             #le bateau tourne vers la gauche
             elif direction == "left":
-                newFront["x"] -= vitesse
+                newFront["x"] -= distance
                 newDirection = "left"
             #le bateau tourne vers la droite
             elif direction == "right":
-                newFront["x"] += vitesse
+                newFront["x"] += distance
                 newDirection = "right"
             #le bateau recule vers le haut
             elif direction == "up":
-                newFront["y"] -= vitesse//2
+                newFront["y"] -= distance//2
         #le bateau est vers la droite
         elif newDirection == "right":
             #le bateau avance vers la droite
             if direction == "right":
-                newFront["x"] += vitesse
+                newFront["x"] += distance
             #le bateau tourne vers le haut
             elif direction == "up":
-                newFront["y"] -= vitesse
+                newFront["y"] -= distance
                 newDirection = "up"
             #le bateau tourne vers le bas
             elif direction == "down":
-                newFront["y"] += vitesse
+                newFront["y"] += distance
                 newDirection = "down"
             #le bateau recule vers la gauche
             elif direction == "left":
-                newFront["x"] -= vitesse//2
+                newFront["x"] -= distance//2
         #le bateau est vers la gauche
         elif newDirection == "left":
             #le bateau avance vers la gauche
             if direction == "left":
-                newFront["x"] -= vitesse
+                newFront["x"] -= distance
             #le bateau tourne vers le haut
             elif direction == "up":
-                newFront["y"] -= vitesse
+                newFront["y"] -= distance
                 newDirection = "up"
             #le bateau tourne vers le bas
             elif direction == "down":
-                newFront["y"] += vitesse
+                newFront["y"] += distance
                 newDirection = "down"
             #le bateau recule vers la droite
             elif direction == "right":
-                newFront["x"] += vitesse//2
+                newFront["x"] += distance//2
         else:
             print("Direction invalide")   
             

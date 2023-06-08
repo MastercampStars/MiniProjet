@@ -8,10 +8,9 @@ def wait_for_keypress():
 
 
 #################### TEST ####################
-map = Map({"x":100,"y":50},"*")
+map = Map({"x":100,"y":30},"*")
 boat = Boat("P",map,[{"x":6,"y":3},{"x":6,"y":9}])
-rock = Boat("P",map,[{"x":12,"y":14},{"x":17,"y":19}])
-
+rock = Boat("M",map,[{"x":12,"y":14},{"x":17,"y":19}])
 map.addElement(boat)
 map.addElement(rock)
 
@@ -19,12 +18,10 @@ run = True
 # Boucle principale
 # lance le jeu
 
-vitesse = 1
+distance = 1
 print(map)
 # Boucle principale
 while run:
-    
-    
     key = wait_for_keypress()
     if key == "q":
         direction = "left"
@@ -35,15 +32,17 @@ while run:
     elif key == "s":
         direction = "down"
     elif key == "+":
-        vitesse += 1
+        distance += 1
     elif key == "-":
-        vitesse -= 1
+        distance -= 1
     elif key == "e":
         run = False
     if key in ["q","d","z","s"]:
-        boat.move(direction,vitesse)   
+        boat.move(direction,distance) 
+        print("Move ", direction,distance)  
         map.reloadMatrice()
         print(map)
+        print("",boat)
     time.sleep(0.1)
     
 
