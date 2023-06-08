@@ -21,7 +21,7 @@ def Main ():
 
     # Création de la carte
     map = Map({"x":85,"y":49},{"char":"*"})
-    boat1 = Boat({"char":"P2","able":True},map,{"x":18,"y":25},"left",{"x":3,"y":7})
+    boat1 = Boat({"char":"P1","able":True},map,{"x":18,"y":25},"left",{"x":3,"y":7})
     boat2 = Boat({"char":"P2","able":True},map,{"x":50,"y":25},"left",{"x":3,"y":7})
     boats = [boat1,boat2]
 
