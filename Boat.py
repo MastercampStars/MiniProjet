@@ -46,9 +46,13 @@ class Boat:
     
     # Calcule la matrice du bateau en fonction de sa longueure, largeure 
     def getMatrice(self):
-        matrice = [[self.type for x in range(self.size["x"])] for y in range(self.size["y"])]
-        matrice[0][0] = "F"
-        matrice[-1][-1] = "B"
+        #creer une matrice de la taille du bateau avet un "T" en deuxième position et self.type partout ailleurs
+        pos_Tourelle_left = [{"x":0,"y":1},{"x":0,"y":self.size["y"]-2}]
+        pos_Tourelle_right = [{"x":self.size["x"]-1,"y":1},{"x":self.size["x"]-1,"y":self.size["y"]-2}]
+        matrice = [[{"char":"Tl","able":True} if ( {"x":x,"y":y} in pos_Tourelle_left) else {"char":"Tr","able":True} if ( {"x":x,"y":y} in pos_Tourelle_right) else self.type.copy()  for x in range(self.size["x"])] for y in range(self.size["y"])]
+        
+        matrice[0][0]["char"] = "F"
+        matrice[-1][-1]["char"] = "B"
         return matrice
     
     # Recalcul la position arrière du bateau à partir de sa direction, de sa position Front et de sa taille
@@ -153,28 +157,57 @@ class Boat:
         # On verrifie si le bateau est dans la map
         if (newFront["x"] < 0 or newFront["x"] >= self.map.size["x"] or newFront["y"] < 0 or newFront["y"] >= self.map.size["y"]):
             return True
+        
         # On copie le bateau et on le place à la nouvelle position 
         boat = self.copy()
         boat.Front = newFront
         boat.direction = newDirection
         boat.reloadBack()
+        
         if (boat.Back["x"] < 0 or boat.Back["x"] >= self.map.size["x"] or boat.Back["y"] < 0 or boat.Back["y"] >= self.map.size["y"]):
             return True
+        
         # On copie la map et on enleve le bateau affin de générer une matrice de la map sans le bateau
         map = self.map.copy()
         map.removeElement(self)
         map.reloadMatrice()
         matrice1 = map.matrice.copy()
+        
         # On ajoute le bateau à la map affin de générer une matrice de la map avec le bateau
         map.addElement(boat)
         map.reloadMatrice()
         matrice2 = map.matrice.copy()
+        
         # On compare les deux matrices pour voir si il y a une une supperposition de deux charactéres autres que "*"
         for y in range(len(matrice1)):
             for x in range(len(matrice1[0])):
-                if (matrice1[y][x] != "*" and matrice1[y][x] != matrice2[y][x] ):
+                if (matrice1[y][x]["char"] != "*" and matrice1[y][x]["char"] != matrice2[y][x]["char"] ):
                     return True
         return False
+    
+    def fire(self):
+        for y in range(self.size["y"]):
+            for x in range(self.size["x"]):
+                if (self.matrice[y][x]["char"]== "Tl"):
+                    self.matrice[y][x]["char"]= "fl"
+                elif (self.matrice[y][x]["char"]== "Tr"):
+                    self.matrice[y][x]["char"]= "fr"
+                elif (self.matrice[y][x]["char"]== "Tu"):
+                    self.matrice[y][x]["char"]= "fu"
+                elif (self.matrice[y][x]["char"]== "Td"):
+                    self.matrice[y][x]["char"]= "fd"
+                  
+    def unFire(self):
+        for y in range(self.size["y"]):
+            for x in range(self.size["x"]):
+                if (self.matrice[y][x]["char"]== "fl"):
+                    self.matrice[y][x]["char"]= "Tl"
+                elif (self.matrice[y][x]["char"]== "fr"):
+                    self.matrice[y][x]["char"]= "Tr"
+                elif (self.matrice[y][x]["char"]== "fu"):
+                    self.matrice[y][x]["char"]= "Tu"
+                elif (self.matrice[y][x]["char"]== "fd"):
+                    self.matrice[y][x]["char"]= "Td"
     
     # Copie du bateau
     def copy(self):
