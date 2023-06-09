@@ -1,5 +1,5 @@
 class Bullet:
-    def __init__(self,position,direction,type):
+    def __init__(self, position, direction, type):
         self.position = position
         self.direction = direction
         self.type = type

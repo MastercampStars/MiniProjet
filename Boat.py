@@ -48,11 +48,18 @@ class Boat:
     def getMatrice(self):
         #creer une matrice de la taille du bateau avet un "T" en deuxième position et self.type partout ailleurs
         pos_Tourelle_left = [{"x":0,"y":1},{"x":0,"y":self.size["y"]-2}]
+        typeLeft = self.type.copy()
+        typeLeft["char"] = "Tl"
         pos_Tourelle_right = [{"x":self.size["x"]-1,"y":1},{"x":self.size["x"]-1,"y":self.size["y"]-2}]
-        matrice = [[{"char":"Tl","able":True} if ( {"x":x,"y":y} in pos_Tourelle_left) else {"char":"Tr","able":True} if ( {"x":x,"y":y} in pos_Tourelle_right) else self.type.copy()  for x in range(self.size["x"])] for y in range(self.size["y"])]
+        typeRight = self.type.copy()
+        typeRight["char"] = "Tr"
+        matrice = [[typeLeft.copy() if ( {"x":x,"y":y} in pos_Tourelle_left) else typeRight.copy() if ( {"x":x,"y":y} in pos_Tourelle_right) else self.type.copy()  for x in range(self.size["x"])] for y in range(self.size["y"])]
+        matrice[self.size["y"]-2][self.size["x"]-1] = typeRight.copy()
         
-        matrice[0][0]["char"] = "F"
-        matrice[-1][-1]["char"] = "B"
+        #le front en bleu
+        #matrice[0][0]["color"] = (0,0,255)
+        #le back en rouge
+        #matrice[-1][-1]["color"] = (255,0,0)
         return matrice
     
     # Recalcul la position arrière du bateau à partir de sa direction, de sa position Front et de sa taille
@@ -78,112 +85,51 @@ class Boat:
         #le bateau est vers le haut
         newFront = self.Front.copy()
         newDirection = self.direction
-        if self.direction == "up":
+
+        if direction == "up" :
             #le bateau avance vers le haut
-            if direction == "up":
-                newFront["y"] -= distance
-            #le bateau tourne vers la gauche
-            elif direction == "left":
-                newFront["x"] -= distance
-                newDirection = "left"
-            #le bateau tourne vers la droite
-            elif direction == "right":
-                newFront["x"] += distance
-                newDirection = "right"
-            #le bateau recule vers le bas
-            elif direction == "down":
-                newFront["y"] += distance//2
-        #le bateau est vers le bas      
-        elif newDirection == "down":
-            #le bateau avance vers le bas
-            if direction == "down":
-                newFront["y"] += distance
-            #le bateau tourne vers la gauche
-            elif direction == "left":
-                newFront["x"] -= distance
-                newDirection = "left"
-            #le bateau tourne vers la droite
-            elif direction == "right":
-                newFront["x"] += distance
-                newDirection = "right"
-            #le bateau recule vers le haut
-            elif direction == "up":
+            if self.direction != "down":
+                newFront["y"] -= distance 
+                newDirection = "up"
+            else:
                 newFront["y"] -= distance//2
-        #le bateau est vers la droite
-        elif newDirection == "right":
+        
+        elif direction == "down" :
+            #le bateau avance vers le bas
+            if self.direction != "up":
+                newFront["y"] += distance
+                newDirection = "down"
+            else:
+                newFront["y"] += distance//2
+        
+        elif direction == "right" :
             #le bateau avance vers la droite
-            if direction == "right":
+            if  self.direction != "left":
                 newFront["x"] += distance
-            #le bateau tourne vers le haut
-            elif direction == "up":
-                newFront["y"] -= distance
-                newDirection = "up"
-            #le bateau tourne vers le bas
-            elif direction == "down":
-                newFront["y"] += distance
-                newDirection = "down"
-            #le bateau recule vers la gauche
-            elif direction == "left":
-                newFront["x"] -= distance//2
-        #le bateau est vers la gauche
-        elif newDirection == "left":
-            #le bateau avance vers la gauche
-            if direction == "left":
-                newFront["x"] -= distance
-            #le bateau tourne vers le haut
-            elif direction == "up":
-                newFront["y"] -= distance
-                newDirection = "up"
-            #le bateau tourne vers le bas
-            elif direction == "down":
-                newFront["y"] += distance
-                newDirection = "down"
-            #le bateau recule vers la droite
-            elif direction == "right":
+                newDirection = "right"
+            else:
                 newFront["x"] += distance//2
+        
+        elif direction == "left" :
+            #le bateau avance vers la gauche
+            if self.direction != "right":
+                newFront["x"] -= distance
+                newDirection = "left"
+            else:
+                newFront["x"] -= distance//2
+    
         else:
             print("Direction invalide")   
             
         #mise a jour de la position du bateau
-        if (not self.collide(newFront,newDirection)):
+        newBoat = Boat(self.type,self.map,newFront,newDirection,self.size)
+        if (not self.map.collide(newBoat,self)):
             self.Front = newFront
             self.direction = newDirection
             self.reloadBack()
-        else:
-            print("Collision")
+            self.map.reloadMatrice()
         
-    # Detecte si le bateau entre en collision avec un autre bateau
-    def collide(self,newFront,newDirection):
-        # On verrifie si le bateau est dans la map
-        if (newFront["x"] < 0 or newFront["x"] >= self.map.size["x"] or newFront["y"] < 0 or newFront["y"] >= self.map.size["y"]):
-            return True
-        
-        # On copie le bateau et on le place à la nouvelle position 
-        boat = self.copy()
-        boat.Front = newFront
-        boat.direction = newDirection
-        boat.reloadBack()
-        
-        if (boat.Back["x"] < 0 or boat.Back["x"] >= self.map.size["x"] or boat.Back["y"] < 0 or boat.Back["y"] >= self.map.size["y"]):
-            return True
-        
-        # On copie la map et on enleve le bateau affin de générer une matrice de la map sans le bateau
-        map = self.map.copy()
-        map.removeElement(self)
-        map.reloadMatrice()
-        matrice1 = map.matrice.copy()
-        
-        # On ajoute le bateau à la map affin de générer une matrice de la map avec le bateau
-        map.addElement(boat)
-        map.reloadMatrice()
-        matrice2 = map.matrice.copy()
-        
-        # On compare les deux matrices pour voir si il y a une une supperposition de deux charactéres autres que "*"
-        for y in range(len(matrice1)):
-            for x in range(len(matrice1[0])):
-                if (matrice1[y][x]["char"] != "*" and matrice1[y][x]["char"] != matrice2[y][x]["char"] ):
-                    return True
-        return False
+    
     
     def fire(self):
         for y in range(self.size["y"]):
@@ -196,6 +142,8 @@ class Boat:
                     self.matrice[y][x]["char"]= "fu"
                 elif (self.matrice[y][x]["char"]== "Td"):
                     self.matrice[y][x]["char"]= "fd"
+        self.map.reloadMatrice()
+        self.unFire()
                   
     def unFire(self):
         for y in range(self.size["y"]):
@@ -208,6 +156,7 @@ class Boat:
                     self.matrice[y][x]["char"]= "Tu"
                 elif (self.matrice[y][x]["char"]== "fd"):
                     self.matrice[y][x]["char"]= "Td"
+        self.map.reloadMatrice()
     
     # Copie du bateau
     def copy(self):
