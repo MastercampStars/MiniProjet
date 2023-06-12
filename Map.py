@@ -1,7 +1,7 @@
 import random
-import pygame
 from Boat import Boat
 from Bullet import Bullet
+from Obstacle import Obstacle
 class Map:
     # Constructeur qui prend en parametre la taille {"x":taille_x, "y":taille_y}, le type de case par défaut {"char":" "} et la liste des elements de la map (bateaux, obstacles, etc...)
     def __init__(self, size, type, elements = []):
@@ -23,9 +23,14 @@ class Map:
     # C'est aussi ici que l'on gère les différentes inetractions entre les elements de la map (tire des tourelles, collision, etc...)
     def addElementToMatrice(self,element):
         
+        if hasattr(element, 'life'):
+            newLife = 0
         # On parcours la matrice de l'element et on les entre dans la matrice de la map en fonction de la direction de l'element et de sa position Front
         for y in range(element.size["y"]):
             for x in range(element.size["x"]):
+                if hasattr(element, 'life'):
+                    if (element.matrice[y][x]["char"] != "X"):
+                        newLife += 1
                 # Calcul de la position de chaques cases de l'élément dans la matrice de la map
                 if (element.direction == "up"):
                     posX = element.Front["x"] + x
@@ -65,6 +70,7 @@ class Map:
                     bullet = Bullet({"x":posX,"y":posY},bulletDirection,element.type)
                     self.bullets.append(bullet)
                     bullet.run()
+        element.life = newLife
                                        
         
     # Recharge la matrice de la map avec tous ses elements

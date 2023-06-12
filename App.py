@@ -19,7 +19,7 @@ def getAngle(direction):
         return 270
         
 
-def Main ():
+def Main (): # -------------------------------------------Initialisation du Main ------------------------------------------ 
     # Initialisation de Pygame
     pygame.init()
 
@@ -33,9 +33,10 @@ def Main ():
     pygame.display.set_caption("Bataille navale")
     
     #initialisation des listes nécessaires pour l'affichage des images
-    images = []
-    positions = []
-    angles = []
+    allImag = []
+    allPos = []
+    allAngles = []
+
     
     # Chargement de la police de caractères
     police = pygame.font.Font(None, cells_Size)
@@ -44,44 +45,60 @@ def Main ():
     # Création de la carte. Elle prend en parametre:(la taille de la carte, le dictionnaire du type de case par défaut)
     map = Map({"x":85,"y":49},{"char":" "})
     # Création des bateaux. Ils prennent en parametre:({le dictionnaire du type de case}, la carte, {la position du Front du bateau}, la direction du bateau, {la taille du bateau})
+    #Team 1
     boat1 = Boat({"char":"P","color":(0,255,0),"able":True,"player":1},map,{"x":18,"y":25},"left",{"x":2,"y":7})
     boat2 = Boat({"char":"P","color":(0,255,0),"able":True,"player":1},map,{"x":50,"y":25},"left",{"x":2,"y":7})
+    # Team 2
     boat3 = Boat({"char":"P","color":(255,0,0),"able":True,"player":2},map,{"x":22,"y":40},"left",{"x":3,"y":7})
     boat4 = Boat({"char":"P","color":(255,0,0),"able":True,"player":2},map,{"x":50,"y":40},"left",{"x":1,"y":7})
     
-    # Création de la liste des bateaux jouables
-    boats = [boat1,boat2,boat3,boat4]
+    # Création d'une liste par team
+    team1 = [boat1,boat2]
+    team2 = [boat3,boat4]
     
-    # Chargement de l'image du bateau par défaut
+    # Création d'une liste de toutes les teams
+    teamsBoats = [team1,team2]
+    
+    # Chargement de l'image du bateau par défaut (on pourra changer l'image en fonction du type de bateau plus tard si besoin)
     boatImage = pygame.image.load("assets/corvette.png").convert_alpha()
     
     
     # Remplissage des listes pour l'affichage des images et ajout des bateaux jouables à la carte
-    for boat in boats:
-        
-        # Ajoutez le bateau à la carte
-        map.addElement(boat)
-        
-        # Récupérez l'angle de l'image en fonction de la direction du bateau et le stockez dans la liste des angles
-        angles.append(getAngle(boat.direction))
-        
-        # Définir la position de l'image en fonction de la direction du bateau et l'ajouter à la liste des positions
+    for boats in teamsBoats:
+        # Création des listes de charactéristiques par team
+        images = []
+        positions = []
+        angles = []    
+        for boat in boats:
+            
+            # Ajoutez le bateau à la carte
+            map.addElement(boat)
+            
+            # Récupérez l'angle de l'image en fonction de la direction du bateau et le stockez dans la liste des angles
+            angles.append(getAngle(boat.direction))
+            
+            # Définir la position de l'image en fonction de la direction du bateau et l'ajouter à la liste des positions
             # La position de l'image correspond toujours à la case la plus en haut à gauche du bateau
-        if boat.direction == "up":
-            positions.append((boat.Front["x"]*cells_Size,boat.Front["y"]*cells_Size))
-        elif boat.direction == "right":
-            positions.append((boat.Back["x"]*cells_Size,(boat.Back["y"]-(boat.size["x"]-1))*cells_Size))
-        elif boat.direction == "down":
-            positions.append((boat.Back["x"]*cells_Size,boat.Back["y"]*cells_Size))
-        elif boat.direction == "left":
-            positions.append((boat.Front["x"]*cells_Size,(boat.Front["y"]-(boat.size["x"]-1))*cells_Size))
+            if boat.direction == "up":
+                positions.append((boat.Front["x"]*cells_Size,boat.Front["y"]*cells_Size))
+            elif boat.direction == "right":
+                positions.append((boat.Back["x"]*cells_Size,(boat.Back["y"]-(boat.size["x"]-1))*cells_Size))
+            elif boat.direction == "down":
+                positions.append((boat.Back["x"]*cells_Size,boat.Back["y"]*cells_Size))
+            elif boat.direction == "left":
+                positions.append((boat.Front["x"]*cells_Size,(boat.Front["y"]-(boat.size["x"]-1))*cells_Size))
+            
+            
+            # Redimensionnez l'image pour s'adapter à la taille du bateau et l'ajouter à la liste des images
+            image = pygame.transform.scale(boatImage, ((boat.size["x"]-0.5) * cells_Size, (boat.size["y"]-0.5)*cells_Size))
+            
+            # Faites pivoter l'image en fonction de l'angle du bateau et ajoutez-la à la liste des images
+            images.append(pygame.transform.rotate(image, - angles[-1]))
         
-        
-        # Redimensionnez l'image pour s'adapter à la taille du bateau et l'ajouter à la liste des images
-        image = pygame.transform.scale(boatImage, ((boat.size["x"]-0.5) * cells_Size, (boat.size["y"]-0.5)*cells_Size))
-        
-        # Faites pivoter l'image en fonction de l'angle du bateau et ajoutez-la à la liste des images
-        images.append(pygame.transform.rotate(image, - angles[-1]))
+        # Ajout des listes de charactéristiques à la liste des listes de charactéristiques
+        allImag.append(images)
+        allPos.append(positions)
+        allAngles.append(angles)
     
     # Génération d'obstacles aléatoires de la carte après avoir ajouté les bateaux pour éviter les collisions au chargement
     map.randGenerate()
@@ -97,10 +114,17 @@ def Main ():
     MAJImage = False
     
     # Initialisation du bateau actif
-    boat = boats[0]
-    indexBoat = 0
     
-    # Boucle principale du jeu
+    indexBoat = 0
+    indexTeam = 0
+    boats = teamsBoats[indexTeam]
+    boat = boats[indexBoat]
+    images = allImag[indexTeam]
+    positions = allPos[indexTeam]
+    angles = allAngles[indexTeam]
+    nbPlayers = len(teamsBoats)
+    
+    # ---------------------------------------------------Boucle principale du jeu---------------------------------------------------
     while not close:
         #chargement de la matrice de la carte
         matrice = map.getMatrice()
@@ -129,8 +153,33 @@ def Main ():
                 elif evenement.key == pygame.K_SPACE:
                     fire = True
                 elif evenement.key == pygame.K_TAB:
+                    
+                    # On passe au bateau suivant
                     indexBoat = (indexBoat+1)%len(boats)
                     boat = boats[indexBoat]
+                    
+                    # Si le bateau est mort : on passe au bateau suivant
+                    if boat.life == 0 :
+                        indexBoat = (indexBoat+1)%len(boats)
+                        boat = boats[indexBoat]
+  
+                elif evenement.key == pygame.K_p:
+                    # On passe au joueur (team) suivant
+                    indexTeam = (indexTeam+1)%nbPlayers
+                    boats = teamsBoats[indexTeam]
+                    images = allImag[indexTeam]
+                    angles = allAngles[indexTeam]
+                    positions = allPos[indexTeam]
+                    indexBoat = 0
+                    boat = boats[indexBoat]
+                    
+                    # Si le bateau est mort : on passe au bateau suivant
+                    if boat.life == 0 :
+                        indexBoat = (indexBoat+1)%len(boats)
+                        boat = boats[indexBoat]
+
+                    
+                    
 
                 
 
@@ -170,7 +219,9 @@ def Main ():
             
             MAJImage = False
             
-
+        # --------------------------------------Début de l'impression sur la fenêtre---------------------------------------
+        
+         
         # Effacement de l'écran avec une couleur bleue
         screen.fill((0, 0, 200))
         
@@ -199,8 +250,24 @@ def Main ():
                 screen.blit(texte, (x * cells_Size, y * cells_Size))
 
         # Impression des images des bateaux dans la fenêtre
-        for i in range (len(boats)):
-            screen.blit(images[i], positions[i])
+        for i in range (len(teamsBoats)):
+            inlife_boats = 0
+            for j in range (len(boats)):
+                
+                # Vérification que le bateau est en vie
+                if teamsBoats[i][j].life > 0:
+                    
+                    # Affichage de l'image du bateau, i correspond à l'index de l'équipe et j à l'index du bateau
+                    screen.blit(allImag[i][j], allPos[i][j])
+                    inlife_boats += 1
+            
+            # Si tous les bateaux de l'équipe sont morts, on affiche un message
+            if inlife_boats == 0:
+                print("Team ", i+1, " is dead")
+                close = True
+                break
+                
+                
           
         # Mise à jour de la fenêtre  
         pygame.display.flip()

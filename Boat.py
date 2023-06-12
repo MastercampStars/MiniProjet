@@ -1,4 +1,6 @@
-class Boat:
+from Element import Element
+
+class Boat(Element):
     
     # Constructeur qui prend en parametre le ({type de bateau} , la map, la position du bateau (Front et Back), la direction, la taille du bateau)
     # La position du bateau peut etre donnée de deux manières différentes :
@@ -7,11 +9,13 @@ class Boat:
     # Le type du bateau est un dictionnaire qui contient les clés "char" qui corespond au charactère qui le représente et "color" et peut égalment contenir d'autres paramétres si besoin
     
     def __init__(self, type, map ,Position, direction = None, size = None):
+        
+        # Initialize the properties inherited from Element
+        super().__init__(Position, None)  # matrice will be set later
         print("Position = ",Position)
         
         # Constructeur si on utilise la position Front et Back
         if isinstance(Position, list):
-            print(Position)
             self.Front = Position[0]
             self.Back = Position[1]
             self.direction = self.getDirection()
@@ -31,10 +35,12 @@ class Boat:
             print("Error with Position type")
         
         self.type = type
+        self.map = map
+        self.life = size["x"]*size["y"]
         
         # On calcule la matrice du bateau à sa création
         self.matrice = self.getMatrice()
-        self.map = map
+        
 
 
     # Calcule la direction du bateau a partir de ses coordonnées Front et Back
@@ -152,7 +158,6 @@ class Boat:
         for y in range(self.size["y"]):
             for x in range(self.size["x"]):
                 if (self.matrice[y][x]["char"]== "T"):
-                    print("fire fire")
                     self.matrice[y][x]["char"]= "f"
         self.map.reloadMatrice()
         self.unFire()
