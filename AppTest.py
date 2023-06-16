@@ -1,7 +1,8 @@
 import pygame
 from pygame.locals import *
 import cProfile
-from Boat import Boat
+from Vehicule import *
+from Vehicule import LittleBoat
 from Map import Map
 from Bullet import Bullet
 clock = pygame.time.Clock()
@@ -16,26 +17,61 @@ def getAngle(direction):
     if direction == "down":
         return 180
     if direction == "left":
-        return 270
+        return -90
+     
+def getImages(elements,cells_Size,players,teamsVehicules): 
+    
+    for element in elements:
+        if ("player" in element.type):
+            if element.type["player"] not in players:
+                players.append(element.type["player"])
+                teamsVehicules.append([])
+            if element not in teamsVehicules[players.index(element.type["player"])]:
+                teamsVehicules[players.index(element.type["player"])].append(element)
         
+        # Récupérez l'angle de l'image en fonction de la direction de l'element et le stockez dans la liste des angles
+        element.imageAngle = getAngle(element.direction)  
+        # Définir la position de l'image en fonction de la direction du bateau et l'ajouter à la liste des positions
+        # La position de l'image correspond toujours à la case la plus en haut à gauche du bateau
+        if element.direction == "up":
+            element.imagePosition = (element.Front["x"]*cells_Size,element.Front["y"]*cells_Size)
+        elif element.direction == "right":
+            element.imagePosition = (element.Back["x"]*cells_Size,(element.Back["y"]-(element.size["x"]-1))*cells_Size)
+        elif element.direction == "down":
+            element.imagePosition = (element.Back["x"]*cells_Size,element.Back["y"]*cells_Size)
+        elif element.direction == "left":
+            element.imagePosition = (element.Front["x"]*cells_Size,(element.Front["y"]-(element.size["x"]-1))*cells_Size)
+            
+        # Redimensionnez l'image pour s'adapter à la taille du bateau et l'ajouter à la liste des images
+        # Chargement de l'image du bateau par défaut
+        elementImage = pygame.image.load("assets/"+element.imageLoc).convert_alpha()
+        image = pygame.transform.scale(elementImage, ((element.size["x"]-0.5) * cells_Size, (element.size["y"]-0.5)*cells_Size))
+            
+        # Faites pivoter l'image en fonction de l'angle du bateau et ajoutez-la à la liste des images
+        element.image = pygame.transform.rotate(image, - element.imageAngle)
+    return teamsVehicules,players
+
+
+
+
+
 
 def Main ():
     # Initialisation de Pygame
     pygame.init()
 
     # Définition des paramètres de la fenêtre
-    largeur_fenetre = 800
-    hauteur_fenetre = 600
-    cells_Size = 20
+    ratio = 1920/1080
+    print(ratio)
+    hauteur_fenetre  = 900
+    largeur_fenetre = int(ratio*hauteur_fenetre )
+
+    cells_Size = 17
 
     # Création de la fenêtre Resizable
     screen = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre), pygame.RESIZABLE)
     pygame.display.set_caption("Bataille navale")
     
-    #initialisation des listes nécessaires pour l'affichage des images
-    allImag = []
-    allPos = []
-    allAngles = []
 
     
     # Chargement de la police de caractères
@@ -43,84 +79,54 @@ def Main ():
 
 
     # Création de la carte. Elle prend en parametre:(la taille de la carte, le dictionnaire du type de case par défaut)
-    map = Map({"x":85,"y":49},{"char":" "})
+    mapSize = 100
+    map = Map({"x":mapSize,"y":int(mapSize*ratio)},{"char":""})
     # Création des bateaux. Ils prennent en parametre:({le dictionnaire du type de case}, la carte, {la position du Front du bateau}, la direction du bateau, {la taille du bateau})
-    boat1 = Boat({"char":"P","color":(0,255,0),"able":True,"player":1},map,{"x":18,"y":25},"left",{"x":2,"y":7})
-    boat2 = Boat({"char":"P","color":(0,255,0),"able":True,"player":1},map,{"x":50,"y":25},"left",{"x":2,"y":7})
+    vehicule1 = Carrier(map,{"x":18,"y":25},"left","player1",color = (255,0,0))
+    vehicule2 = BigBoat(map,{"x":30,"y":25},"up","player1",color = (255,0,0))
     
-    boat3 = Boat({"char":"P","color":(255,0,0),"able":True,"player":2},map,{"x":22,"y":40},"left",{"x":3,"y":7})
-    boat4 = Boat({"char":"P","color":(255,0,0),"able":True,"player":2},map,{"x":50,"y":40},"left",{"x":1,"y":7})
+    vehicule3 = MedicaleBoat(map,{"x":18,"y":40},"right","player2")
+    vehicule4 = Submarine(map,{"x":40,"y":25},"down","player2")
+    vehicule5 = Jet(map,{"x":40,"y":40},"down")
     
     # Création de la liste des bateaux jouables
-    team1 = [boat1,boat2]
-    team2 = [boat3,boat4]
+    NewVehicules = [vehicule1,vehicule2,vehicule3,vehicule4]
     
-    teamsBoats = [team1,team2]
+    # Ajout des bateaux jouables à la carte
+    for vehicule in NewVehicules:
+        map.addElement(vehicule)
     
-    # Chargement de l'image du bateau par défaut
-    boatImage = pygame.image.load("assets/corvette.png").convert_alpha()
-    
-    
-    # Remplissage des listes pour l'affichage des images et ajout des bateaux jouables à la carte
-    for boats in teamsBoats:
-        images = []
-        positions = []
-        angles = []    
-        for boat in boats:
-            
-            # Ajoutez le bateau à la carte
-            map.addElement(boat)
-            
-            # Récupérez l'angle de l'image en fonction de la direction du bateau et le stockez dans la liste des angles
-            angles.append(getAngle(boat.direction))
-            
-            # Définir la position de l'image en fonction de la direction du bateau et l'ajouter à la liste des positions
-                # La position de l'image correspond toujours à la case la plus en haut à gauche du bateau
-            if boat.direction == "up":
-                positions.append((boat.Front["x"]*cells_Size,boat.Front["y"]*cells_Size))
-            elif boat.direction == "right":
-                positions.append((boat.Back["x"]*cells_Size,(boat.Back["y"]-(boat.size["x"]-1))*cells_Size))
-            elif boat.direction == "down":
-                positions.append((boat.Back["x"]*cells_Size,boat.Back["y"]*cells_Size))
-            elif boat.direction == "left":
-                positions.append((boat.Front["x"]*cells_Size,(boat.Front["y"]-(boat.size["x"]-1))*cells_Size))
-            
-            
-            # Redimensionnez l'image pour s'adapter à la taille du bateau et l'ajouter à la liste des images
-            image = pygame.transform.scale(boatImage, ((boat.size["x"]-0.5) * cells_Size, (boat.size["y"]-0.5)*cells_Size))
-            
-            # Faites pivoter l'image en fonction de l'angle du bateau et ajoutez-la à la liste des images
-            images.append(pygame.transform.rotate(image, - angles[-1]))
-        allImag.append(images)
-        allPos.append(positions)
-        allAngles.append(angles)
-    
-    # Génération d'obstacles aléatoires de la carte après avoir ajouté les bateaux pour éviter les collisions au chargement
-    map.randGenerate()
+    #map.randGenerate()
     
 
-    # Vitesse de déplacement du bateau
-    distance = 3
+    players = []
+    teamsVehicules = []
+    
+    #chargement des images
+    teamsVehicules,players = getImages(map.elements,cells_Size,players,teamsVehicules)
+    
 
     # Variable de boucle
     direction = None
     close = False
     fire = False
     MAJImage = False
+    loadImages = False
     
     # Initialisation du bateau actif
     
-    indexBoat = 0
+    indexVehicule = 0
     indexTeam = 0
-    boats = teamsBoats[indexTeam]
-    boat = boats[indexBoat]
-    images = allImag[indexTeam]
-    positions = allPos[indexTeam]
-    angles = allAngles[indexTeam]
-    nbPlayers = len(teamsBoats)
+    vehicules = teamsVehicules[indexTeam]
+    vehicule = vehicules[indexVehicule]
+
+    nbPlayers = len(players)
+    distanceImage = 0
+    diffRotation = 0
     
     # Boucle principale du jeu
     while not close:
+
         #chargement de la matrice de la carte
         matrice = map.getMatrice()
         
@@ -130,83 +136,126 @@ def Main ():
             # Si l'utilisateur quitte le jeu
             if evenement.type == pygame.QUIT:
                 close = True
+            if distanceImage == 0:
+                # Capte les touches enfoncées pour définir les actions à effectuer
+                if evenement.type == pygame.KEYDOWN:
+                    if evenement.key == pygame.K_q:
+                        direction = "left"
+                    elif evenement.key == pygame.K_d:
+                        direction = "right"
+                    elif evenement.key == pygame.K_z:
+                        direction = "up"
+                    elif evenement.key == pygame.K_s:
+                        direction = "down"
+                    elif evenement.key == pygame.K_PLUS or evenement.key == pygame.K_KP_PLUS:
+                        vehicule.maxSpeed += 1
+                    elif evenement.key == pygame.K_MINUS or evenement.key == pygame.K_KP_MINUS:
+                        vehicule.maxSpeed -= 1
+                    elif evenement.key == pygame.K_SPACE:
+                        fire = True
+                    elif evenement.key == pygame.K_KP_ENTER or evenement.key == pygame.K_RETURN:
+                        print("special")
+                        if hasattr (vehicule,'special') :
+                            vehicule.special()
+                        loadImages = True
+                        
+                    elif evenement.key == pygame.K_TAB:
+                        indexVehicule = (indexVehicule+1)%len(vehicules)
+                        print(len(vehicules))
+                        vehicule = vehicules[indexVehicule]
+                        
+                        # Si le bateau est mort : on passe au bateau suivant
+                        if vehicule.life == 0 :
+                            indexVehicule = (indexVehicule+1)%len(vehicules)
+                            vehicule = vehicules[indexVehicule]
+    
+                    elif evenement.key == pygame.K_p:
+                        indexTeam = (indexTeam+1)%len(teamsVehicules)
+                        vehicules = teamsVehicules[indexTeam]
+                        indexVehicule = 0
+                        vehicule = vehicules[indexVehicule]
+                        
+                        # Si le bateau est mort : on passe au bateau suivant
+                        if vehicule.life == 0 :
+                            indexVehicule = (indexVehicule+1)%len(vehicules)
+                            vehicule = vehicules[indexVehicule]
+
+
+        #chargement des images
+        if loadImages:
+            teamsVehicules,players = getImages(map.elements,cells_Size,players,teamsVehicules)
+            vehicules = teamsVehicules[indexTeam]
+            loadImages = False
             
-            # Capte les touches enfoncées pour définir les actions à effectuer
-            elif evenement.type == pygame.KEYDOWN:
-                if evenement.key == pygame.K_q:
-                    direction = "left"
-                elif evenement.key == pygame.K_d:
-                    direction = "right"
-                elif evenement.key == pygame.K_z:
-                    direction = "up"
-                elif evenement.key == pygame.K_s:
-                    direction = "down"
-                elif evenement.key == pygame.K_PLUS or evenement.key == pygame.K_KP_PLUS:
-                    distance += 1
-                elif evenement.key == pygame.K_MINUS or evenement.key == pygame.K_KP_MINUS:
-                    distance -= 1
-                elif evenement.key == pygame.K_SPACE:
-                    fire = True
-                elif evenement.key == pygame.K_TAB:
-                    indexBoat = (indexBoat+1)%len(boats)
-                    boat = boats[indexBoat]
-                    
-                    # Si le bateau est mort : on passe au bateau suivant
-                    if boat.life == 0 :
-                        indexBoat = (indexBoat+1)%len(boats)
-                        boat = boats[indexBoat]
-  
-                elif evenement.key == pygame.K_p:
-                    indexTeam = (indexTeam+1)%nbPlayers
-                    boats = teamsBoats[indexTeam]
-                    images = allImag[indexTeam]
-                    angles = allAngles[indexTeam]
-                    positions = allPos[indexTeam]
-                    indexBoat = 0
-                    boat = boats[indexBoat]
-                    
-                    # Si le bateau est mort : on passe au bateau suivant
-                    if boat.life == 0 :
-                        indexBoat = (indexBoat+1)%len(boats)
-                        boat = boats[indexBoat]
-
-
 
         # Déplacement du bateau
         if direction is not None:
             # Faites ici le traitement de déplacement du bateau en fonction de la direction et de la distance
-            boat.move(direction,distance) 
-            print("Move ", direction,distance) 
+            presAngle = getAngle(vehicule.direction)
+            vehicule.move(direction) 
+            print("Move ", direction) 
+            distanceImage = cells_Size * vehicule.speed
+            print(getAngle(vehicule.direction))
+            
+            diffRotation = (getAngle(vehicule.direction) - presAngle)%360
+            
+            if diffRotation > 180:
+                diffRotation -= 360
+             
+            #print("diffRotation : ", diffRotation)
+            
+                
             MAJImage = True
             # Réinitialisation des variables de déplacement
             direction = None
         
         # Tir du bateau
         if fire:
-            boat.fire()
+            vehicule.fire()
             print("Fire") 
             print(len(map.bullets))
             fire = False
-            
+
         
         # Mise à jour de la position et de l'angle de l'image du bateau uniquement si le bateau a bougé    
         if MAJImage:
              # Mise à jour de l'angle de l'image
-            images[indexBoat] = pygame.transform.rotate(images[indexBoat], angles[indexBoat] - getAngle(boat.direction))
-            angles[indexBoat]  = getAngle(boat.direction)
-            if boat.direction == "up":
-                positions[indexBoat] = (boat.Front["x"]*cells_Size,boat.Front["y"]*cells_Size)
+            vehicule.image = pygame.transform.rotate(vehicule.image, vehicule.imageAngle - getAngle(vehicule.direction))  
+            vehicule.imageAngle  = getAngle(vehicule.direction)
+            if vehicule.direction == "up":
+                vehicule.imagePosition = (vehicule.Front["x"]*cells_Size  ,vehicule.Front["y"]*cells_Size + distanceImage)
                 
-            elif boat.direction == "right":
-                positions[indexBoat] = (boat.Back["x"]*cells_Size,(boat.Back["y"]-(boat.size["x"]-1))*cells_Size)
-            
-            elif boat.direction == "down":
-                positions[indexBoat] = (boat.Back["x"]*cells_Size,boat.Back["y"]*cells_Size)
+            elif vehicule.direction == "right":
+                vehicule.imagePosition = (vehicule.Back["x"]*cells_Size - distanceImage ,(vehicule.Back["y"]-(vehicule.size["x"]-1))*cells_Size )
 
-            elif boat.direction == "left":
-                positions[indexBoat] = (boat.Front["x"]*cells_Size,(boat.Front["y"]-(boat.size["x"]-1))*cells_Size)
+            elif vehicule.direction == "down":
+                vehicule.imagePosition = (vehicule.Back["x"]*cells_Size  ,vehicule.Back["y"]*cells_Size - distanceImage )
+
+            elif vehicule.direction == "left":
+                vehicule.imagePosition = (vehicule.Front["x"]*cells_Size  + distanceImage ,(vehicule.Front["y"]-(vehicule.size["x"]-1))*cells_Size)
             
             MAJImage = False
+        
+        if distanceImage > 0 :
+            distanceImage -= 1 *cells_Size*0.5
+            MAJImage = True
+        elif distanceImage < 0 :
+            distanceImage += 1 *cells_Size*0.5
+            MAJImage = True
+            
+        if diffRotation > 0 :
+            diffRotation -= 5
+            MAJImage = True
+        elif diffRotation < 0 :
+            diffRotation += 5
+            MAJImage = True
+        #print("diffRotation : ", diffRotation)
+            
+
+
+        
+        
+        #print(positions[indexVehicule])
             
 
         # Effacement de l'écran avec une couleur bleue
@@ -227,32 +276,26 @@ def Main ():
                     color = matrice[y][x]["color"]
                 else: color = (255,255,255)
                 
+                
+                #caractere =" "
+                
                 # Affichage des bullets de la map
                 for bullet in map.bullets:
                     if bullet.position["x"] == x and bullet.position["y"] == y:
                         caractere = "o"
                         
                 # Impression du caractère dans la fenêtre aux coordonnées x et y
-                texte = police.render(caractere, True, color)
-                screen.blit(texte, (x * cells_Size, y * cells_Size))
+                if caractere != "":
+                    texte = police.render(caractere, True, color)
+                    screen.blit(texte, (x * cells_Size, y * cells_Size))
 
         # Impression des images des bateaux dans la fenêtre
-        for i in range (len(teamsBoats)):
-            inlife_boats = 0
-            for j in range (len(boats)):
-                
-                # Vérification que le bateau est en vie
-                if teamsBoats[id ][j].life > 0:
-                    
-                    # Affichage de l'image du bateau, i correspond à l'index de l'équipe et j à l'index du bateau
-                    screen.blit(allImag[i][j], allPos[i][j])
-                    inlife_boats += 1
-            
+        for element in map.elements:
+            # Vérification que le bateau est en vie
+            if hasattr(element,'life') and element.life > 0:
+                # Affichage de l'image du bateau, i correspond à l'index de l'équipe et j à l'index du bateau
+                screen.blit(element.image, element.imagePosition)
             # Si tous les bateaux de l'équipe sont morts, on affiche un message
-            if inlife_boats == 0:
-                print("Team ", i+1, " is dead")
-                close = True
-                break
                 
                 
 

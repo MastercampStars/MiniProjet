@@ -1,12 +1,12 @@
 import pygame
 from pygame.locals import *
 import cProfile
-from Boat import Boat
+from Vehicule import Boat
 from Map import Map
 from Bullet import Bullet
 clock = pygame.time.Clock()
 
-#permet de récuperer l'angle en fonction de la direction, utile pour la rotation des images des bateaux
+#permet de récuperer l'angle en fonction de la di, utile pour la rotation des images des bateaux
 def getAngle(direction):
     
     if direction == "up":
@@ -24,9 +24,9 @@ def Main (): # -------------------------------------------Initialisation du Main
     pygame.init()
 
     # Définition des paramètres de la fenêtre
-    largeur_fenetre = 800
-    hauteur_fenetre = 600
-    cells_Size = 20
+    largeur_fenetre = 1920
+    hauteur_fenetre = 1080
+    cells_Size = 17
 
     # Création de la fenêtre Resizable
     screen = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre), pygame.RESIZABLE)
@@ -43,7 +43,7 @@ def Main (): # -------------------------------------------Initialisation du Main
 
 
     # Création de la carte. Elle prend en parametre:(la taille de la carte, le dictionnaire du type de case par défaut)
-    map = Map({"x":85,"y":49},{"char":" "})
+    map = Map({"x":85,"y":49},{"char":"*"})
     # Création des bateaux. Ils prennent en parametre:({le dictionnaire du type de case}, la carte, {la position du Front du bateau}, la direction du bateau, {la taille du bateau})
     #Team 1
     boat1 = Boat({"char":"P","color":(0,255,0),"able":True,"player":1},map,{"x":18,"y":25},"left",{"x":2,"y":7})
