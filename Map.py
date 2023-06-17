@@ -84,6 +84,8 @@ class Map:
     def reloadBullets(self):
         for bullet in self.bullets:
             
+            nonCollisions = [self.type["char"],"X","f"]
+            
             #supprier la bullet si elle sort de la map
             if (bullet.position["x"] < 0 or bullet.position["x"] >= self.size["x"] or bullet.position["y"] < 0 or bullet.position["y"] >= self.size["y"]):
                 self.bullets.remove(bullet)
@@ -91,11 +93,11 @@ class Map:
                 self.bullets.remove(bullet)
             
             #supprimer la bullet si elle touche un obstacle
-            elif (self.matrice[bullet.position["y"]][bullet.position["x"]]["char"] != self.type["char"] and self.matrice[bullet.position["y"]][bullet.position["x"]]["able"] == True):
+            
+            elif (self.matrice[bullet.position["y"]][bullet.position["x"]]["char"] not in nonCollisions):
                 if (self.matrice[bullet.position["y"]][bullet.position["x"]]["id"] != bullet.type["id"]):
                     self.bullets.remove(bullet)
                     self.matrice[bullet.position["y"]][bullet.position["x"]]["char"] = "X"
-                    self.matrice[bullet.position["y"]][bullet.position["x"]]["able"] = False
                 
             if (bullet in self.bullets):
                 bullet.run()
