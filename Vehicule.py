@@ -178,7 +178,7 @@ class Vehicule(Element):
 class LittleBoat(Vehicule):
     size = {"x": 3, "y": 5}
     collide =  ["bullet","element"]
-    speed = 3
+    speed = 6
     imageLoc = "littleBoat.png"
     instance = 0
     tourelles = [{"x":0,"y":0,"direction":"up"},{"x":2,"y":1,"direction":"up"}]
@@ -200,7 +200,7 @@ class LittleBoat(Vehicule):
 class MedicaleBoat (Vehicule):
     size = {"x":2,"y":7}
     collide =  ["bullet","element"]
-    speed = 4
+    speed = 3
     instance = 0
     imageLoc = "medicaleBoat.png"
     dynamite = True
@@ -216,11 +216,11 @@ class MedicaleBoat (Vehicule):
         
 class BigBoat (Vehicule):
     size = {"x":3,"y":13}
-    speed = 4
+    speed = 3
     collide =  ["bullet","element"]
     instance = 0
     imageLoc = "bigBoat.png"
-    tourelles = [{"x":1,"y":0,"direction":"up"},{"x":1,"y":1,"direction":"up"}]
+    tourelles = [{"x":0,"y":1,"direction":"left"},{"x":0,"y":5,"direction":"left"},{"x":0,"y":10,"direction":"left"},{"x":2,"y":0,"direction":"right"},{"x":2,"y":5,"direction":"right"},{"x":2,"y":10,"direction":"right"}]
     dynamite = True
     
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str,color :tuple = None):
@@ -234,11 +234,11 @@ class BigBoat (Vehicule):
         
 class Carrier (Vehicule):
     size = {"x":4,"y":9}
-    speed = 4
+    speed = 3
     collide =  ["bullet","element"]
     instance = 0
     imageLoc = "carrier.png"
-    tourelles = [{"x":1,"y":0,"direction":"up"},{"x":1,"y":1,"direction":"up"},{"x":1,"y":2,"direction":"up"}]
+    #tourelles = [{"x":1,"y":0,"direction":"up"},{"x":1,"y":1,"direction":"up"},{"x":1,"y":2,"direction":"up"}]
     dynamite = True
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str,color :tuple = None):
         self.type = {"char":"C"}
@@ -255,7 +255,7 @@ class Carrier (Vehicule):
 
 class Submarine (Vehicule):
     size = {"x":3,"y":7}
-    speed = 4
+    speed = 3
     collide1 =  ["bullet","element","obstacle"]
     collide2 = ["obstacle"]
     instance = 0
