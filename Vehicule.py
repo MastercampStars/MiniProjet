@@ -238,7 +238,7 @@ class Carrier (Vehicule):
     collide =  ["bullet","element"]
     instance = 0
     imageLoc = "carrier.png"
-    #tourelles = [{"x":1,"y":0,"direction":"up"},{"x":1,"y":1,"direction":"up"},{"x":1,"y":2,"direction":"up"}]
+    tourelles = []
     dynamite = True
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str,color :tuple = None):
         self.type = {"char":"C"}
