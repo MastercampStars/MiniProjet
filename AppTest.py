@@ -191,8 +191,8 @@ def Main ():
                             indexVehicule = (indexVehicule+1)%len(vehicules)
                             vehicule = vehicules[indexVehicule]
                     elif evenement.key == pygame.K_x:
-                        print("EXPLOSIOOONN",map.canExplode(vehicule))
-                        close=True
+                        if map.canExplode(vehicule)==True:
+                            close=True
                     
                         
 

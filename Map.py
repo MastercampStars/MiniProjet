@@ -179,13 +179,14 @@ class Map:
         
     #Vérifie si le bateau est bien entièrement dans la base avant l'explosion
     def canExplode(self, Vehicule):
-        for element in self.elements:
-            if element.type["char"] == "Q":
-                if element.type["player"] != Vehicule.type["player"]:
-                    Base = element
-        if (((Vehicule.Front["x"]>=Base.Front["x"]) and (Vehicule.Front["x"]<=Base.Back["x"]))) and (((Vehicule.Front["y"]>=Base.Front["y"]) and (Vehicule.Front["y"]<=Base.Back["y"]))): 
-            if(((Vehicule.Back["x"]>=Base.Front["x"]) and (Vehicule.Back["x"]<=Base.Back["x"]))) and (((Vehicule.Back["y"]>=Base.Front["y"]) and (Vehicule.Front["y"]<=Base.Back["y"]))):
-                return True
+        if(Vehicule.dynamite==True):
+            for element in self.elements:
+                if element.type["char"] == "Q":
+                    if element.type["player"] != Vehicule.type["player"]:
+                        Base = element
+            if (((Vehicule.Front["x"]>=Base.Front["x"]) and (Vehicule.Front["x"]<=Base.Back["x"]))) and (((Vehicule.Front["y"]>=Base.Front["y"]) and (Vehicule.Front["y"]<=Base.Back["y"]))): 
+                if(((Vehicule.Back["x"]>=Base.Front["x"]) and (Vehicule.Back["x"]<=Base.Back["x"]))) and (((Vehicule.Back["y"]>=Base.Front["y"]) and (Vehicule.Front["y"]<=Base.Back["y"]))):
+                    return True
         return False
         
     # Copie de la map
