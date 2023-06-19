@@ -5,6 +5,7 @@ from Vehicule import *
 from Vehicule import LittleBoat
 from Map import Map
 from Bullet import Bullet
+from Base import Base
 clock = pygame.time.Clock()
 
 #permet de récuperer l'angle en fonction de la direction, utile pour la rotation des images des bateaux
@@ -23,11 +24,12 @@ def getImages(elements,cells_Size,players,teamsVehicules):
     
     for element in elements:
         if ("player" in element.type):
-            if element.type["player"] not in players:
-                players.append(element.type["player"])
-                teamsVehicules.append([])
-            if element not in teamsVehicules[players.index(element.type["player"])]:
-                teamsVehicules[players.index(element.type["player"])].append(element)
+            if element.type["char"] != "Q":
+                if element.type["player"] not in players:
+                    players.append(element.type["player"])
+                    teamsVehicules.append([])
+                if element not in teamsVehicules[players.index(element.type["player"])]:
+                    teamsVehicules[players.index(element.type["player"])].append(element)
         
         # Récupérez l'angle de l'image en fonction de la direction de l'element et le stockez dans la liste des angles
         element.imageAngle = getAngle(element.direction)  
@@ -44,15 +46,13 @@ def getImages(elements,cells_Size,players,teamsVehicules):
             
         # Redimensionnez l'image pour s'adapter à la taille du bateau et l'ajouter à la liste des images
         # Chargement de l'image du bateau par défaut
-        elementImage = pygame.image.load("assets/"+element.imageLoc).convert_alpha()
-        image = pygame.transform.scale(elementImage, ((element.size["x"]-0.5) * cells_Size, (element.size["y"]-0.5)*cells_Size))
-            
-        # Faites pivoter l'image en fonction de l'angle du bateau et ajoutez-la à la liste des images
-        element.image = pygame.transform.rotate(image, - element.imageAngle)
+        if(hasattr(element,"life")):
+            elementImage = pygame.image.load("assets/"+element.imageLoc).convert_alpha()
+            image = pygame.transform.scale(elementImage, ((element.size["x"]-0.5) * cells_Size, (element.size["y"]-0.5)*cells_Size))
+            # Faites pivoter l'image en fonction de l'angle du bateau et ajoutez-la à la liste des images
+            element.image = pygame.transform.rotate(image, - element.imageAngle)
+    
     return teamsVehicules,players
-
-
-
 
 
 
@@ -89,7 +89,8 @@ def Main ():
     
     vehicule3 = MedicaleBoat(map,{"x":18,"y":40},"right","player2")
     vehicule4 = Submarine(map,{"x":40,"y":25},"down","player2")
-    vehicule5 = Jet(map,{"x":40,"y":40},"down")
+
+
     
     # Création de la liste des bateaux jouables
     NewVehicules = [vehicule1,vehicule2,vehicule3,vehicule4]
@@ -98,7 +99,7 @@ def Main ():
     for vehicule in NewVehicules:
         map.addElement(vehicule)
     
-    #map.randGenerate()
+    map.randGenerate()
     
 
     players = []
@@ -188,6 +189,10 @@ def Main ():
                         if vehicule.life == 0 :
                             indexVehicule = (indexVehicule+1)%len(vehicules)
                             vehicule = vehicules[indexVehicule]
+                    
+                    elif evenement.key == pygame.K_x:
+                        if (map.canExplode(vehicule)):
+                            close=True
                         
 
 

@@ -251,7 +251,8 @@ class Carrier (Vehicule):
 class Submarine (Vehicule):
     size = {"x":3,"y":7}
     speed = 4
-    collide =  ["bullet","element"]
+    collide1 =  ["bullet","element","obstacle"]
+    collide2 = ["obstacle"]
     instance = 0
     imageLoc = "submarine.png"
     tourelles = [{"x":0,"y":0,"direction":"up"},{"x":1,"y":0,"direction":"up"},{"x":2,"y":0,"direction":"up"}]
@@ -259,27 +260,23 @@ class Submarine (Vehicule):
         self.type = {"char":"S"}
         self.type["player"] = player
         self.type["color"] = color or (255,255,255)
-        self.type["collide"] = self.collide.copy()
+        self.type["collide"] = self.collide1.copy()
         self.type["id"] = self.type["char"] + str(self.instance)
         Submarine.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
         self.type["id"] = "S" + str(Submarine.instance)
     
     def special(self):
-        if(self.type["collide"] != []):
-            print("submarine dive", self.type["collide"])
-            self.type["collide"] = []
-            print("submarine dive", self.type["collide"])
+        if(self.type["collide"] == Submarine.collide1):
+            self.type["collide"] = Submarine.collide2
             for y in range(self.size["y"]):
                 for x in range(self.size["x"]):
-                    self.matrice[y][x]["collide"] = []
+                    self.matrice[y][x]["collide"] = self.type["collide"].copy()
                     if self.matrice[y][x]["char"] != "X":
-                        self.matrice[y][x]["char"] = "w"
+                        self.matrice[y][x]["char"] = "W"
         
-        elif(self.type["collide"] == []):
-            print("submarine dive", self.type["collide"])
-            self.type["collide"] = Submarine.collide
-            print("submarine dive", self.type["collide"])
+        elif(self.type["collide"] == Submarine.collide2):
+            self.type["collide"] = Submarine.collide1
             for y in range(self.size["y"]):
                 for x in range(self.size["x"]):
                     self.matrice[y][x]["collide"] = self.type["collide"].copy()
@@ -301,6 +298,7 @@ class Jet( Vehicule):
     instance = 0
     imageLoc = "jet.png"
     tourelles = [{"x":1,"y":0,"direction":"up"}]
+    
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str = None,color :tuple = None):
         self.type = {"char":"J"}
         self.type["player"] = player or None

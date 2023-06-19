@@ -1,4 +1,5 @@
 import random
+from Base import Base
 from Vehicule import Vehicule
 from Bullet import Bullet
 from Obstacle import Obstacle
@@ -71,7 +72,8 @@ class Map:
                     bullet = Bullet({"x":posX,"y":posY},bulletDirection,element.type)
                     self.bullets.append(bullet)
                     bullet.run()
-        element.life = newLife
+        if hasattr(element, 'life'):
+            element.life = newLife
                                        
         
     # Recharge la matrice de la map avec tous ses elements
@@ -110,6 +112,7 @@ class Map:
             if(not self.collide(element)):
                 self.elements.append(element)
                 self.reloadMatrice()
+                return True
     
     # Supprime un element de la map si il existe (bateau, obstacle, etc...)
     def removeElement(self,element:Element):
@@ -147,8 +150,6 @@ class Map:
 
         for y in range(len(matrice1)):
             for x in range(len(matrice1[0])): 
-                
-                
                 collide1 = []
                 collide2 = []
                 if ("collide" in matrice1[y][x]):
@@ -165,28 +166,40 @@ class Map:
                                 print("matrice1",matrice1[y][x]["collide"],matrice2[y][x]["collide"])
                                 print("collision",matrice1[y][x]["char"],matrice2[y][x]["char"])
                                 return True
-                
-                
+                   
         return False
         
     #Génération aléatoire de la map
     def randGenerate(self):
-        
+        # Création des bases 
+        base1 = Base(self,"up","player1", (255, 0, 0))
+        base2 = Base(self,"up","player2",(0,255,0))
+        # Ajout des bases à la carte
+        self.addElement(base1)
+        self.addElement(base2)
         
         # On génère un nombre aléatoire d'obstacle
-        number_Obstacle = random.randint(5, 10)
-        for i in range(number_Obstacle):
-            
-            # On génère aléatoirement la position, la taille et la direction de l'obstacle
-            pos_X = random.randint(0, self.size["x"]-1)
-            pos_Y = random.randint(0, self.size["y"]-1)
-            size_X = random.randint(1, 10)
-            size_Y = random.randint(1, 10)
-            direction = random.choice(["up","down","right","left"])
-            
+        number_Obstacle = random.randint(5, 6)
+        cpt=0
+        while(cpt<number_Obstacle):
             # On ajoute l'obstacle à la map si il n'y a pas de collision
-            obstacle = Vehicule({"char":"R","able":True,"color":(255,255,255),"player":0},self.copy(),{"x":pos_X,"y":pos_Y},direction,{"x":size_X,"y":size_Y})
-            self.addElement(obstacle)       
+            obstacle = Obstacle(self.copy())
+            self.addElement(obstacle) 
+            if (self.addElement(obstacle)):
+                cpt+=1
+
+        
+    #Vérifie si le bateau est bien entièrement dans la base avant l'explosion
+    def canExplode(self, Vehicule):
+        if(Vehicule.dynamite==True):
+            for element in self.elements:
+                if element.type["char"] == "Q":
+                    if element.type["player"] != Vehicule.type["player"]:
+                        Base = element
+            if (((Vehicule.Front["x"]>=Base.Front["x"]) and (Vehicule.Front["x"]<=Base.Back["x"]))) and (((Vehicule.Front["y"]>=Base.Front["y"]) and (Vehicule.Front["y"]<=Base.Back["y"]))): 
+                if(((Vehicule.Back["x"]>=Base.Front["x"]) and (Vehicule.Back["x"]<=Base.Back["x"]))) and (((Vehicule.Back["y"]>=Base.Front["y"]) and (Vehicule.Front["y"]<=Base.Back["y"]))):
+                    return True
+            return False 
         
         
     # Copie de la map
