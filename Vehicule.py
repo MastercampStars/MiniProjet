@@ -182,6 +182,7 @@ class LittleBoat(Vehicule):
     imageLoc = "littleBoat.png"
     instance = 0
     tourelles = [{"x":0,"y":0,"direction":"up"},{"x":2,"y":1,"direction":"up"}]
+    dynamite = True
 
     def __init__(self, map, position: Dict[int, int], direction: str, player: str, color: tuple = None):
         self.type = {"char": "L"}
@@ -202,6 +203,7 @@ class MedicaleBoat (Vehicule):
     speed = 4
     instance = 0
     imageLoc = "medicaleBoat.png"
+    dynamite = True
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str,color :tuple = None):
         self.type = {"char":"M"}
         self.type["player"] = player
@@ -219,6 +221,8 @@ class BigBoat (Vehicule):
     instance = 0
     imageLoc = "bigBoat.png"
     tourelles = [{"x":1,"y":0,"direction":"up"},{"x":1,"y":1,"direction":"up"}]
+    dynamite = True
+    
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str,color :tuple = None):
         self.type = {"char":"B"}
         self.type["player"] = player
@@ -235,6 +239,7 @@ class Carrier (Vehicule):
     instance = 0
     imageLoc = "carrier.png"
     tourelles = [{"x":1,"y":0,"direction":"up"},{"x":1,"y":1,"direction":"up"},{"x":1,"y":2,"direction":"up"}]
+    dynamite = True
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str,color :tuple = None):
         self.type = {"char":"C"}
         self.type["player"] = player
@@ -256,6 +261,7 @@ class Submarine (Vehicule):
     instance = 0
     imageLoc = "submarine.png"
     tourelles = [{"x":0,"y":0,"direction":"up"},{"x":1,"y":0,"direction":"up"},{"x":2,"y":0,"direction":"up"}]
+    dynamite = False
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str,color :tuple = None):
         self.type = {"char":"S"}
         self.type["player"] = player
@@ -298,6 +304,7 @@ class Jet( Vehicule):
     instance = 0
     imageLoc = "jet.png"
     tourelles = [{"x":1,"y":0,"direction":"up"}]
+    dynamite = False
     
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str = None,color :tuple = None):
         self.type = {"char":"J"}
