@@ -220,7 +220,9 @@ class BigBoat (Vehicule):
     collide =  ["bullet","element"]
     instance = 0
     imageLoc = "bigBoat.png"
-    tourelles = [{"x":0,"y":1,"direction":"left"},{"x":0,"y":5,"direction":"left"},{"x":0,"y":10,"direction":"left"},{"x":2,"y":0,"direction":"right"},{"x":2,"y":5,"direction":"right"},{"x":2,"y":10,"direction":"right"}]
+    tourelles1 = [{"x":0,"y":1,"direction":"left"},{"x":0,"y":5,"direction":"left"},{"x":0,"y":10,"direction":"left"},{"x":2,"y":1,"direction":"right"},{"x":2,"y":5,"direction":"right"},{"x":2,"y":10,"direction":"right"}]
+    tourelles2 = [{"x":0,"y":0,"direction":"up"},{"x":1,"y":0,"direction":"up"},{"x":2,"y":0,"direction":"up"},{"x":0,"y":12,"direction":"down"},{"x":1,"y":12,"direction":"down"},{"x":2,"y":12,"direction":"down"}]
+    tourelles = tourelles1
     dynamite = True
     
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str,color :tuple = None):
@@ -231,6 +233,24 @@ class BigBoat (Vehicule):
         self.type["id"] = self.type["char"] + str(self.instance)
         BigBoat.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
+        
+    def special(self):
+        
+        for tourelle in self.tourelles:
+            if self.matrice[tourelle["y"]][tourelle["x"]]["char"] != "X":
+                self.matrice[tourelle["y"]][tourelle["x"]]["char"] = self.type["char"]
+                del self.matrice[tourelle["y"]][tourelle["x"]]["direction"]
+        
+        if(self.tourelles == self.tourelles1):
+            self.tourelles = self.tourelles2
+        else:
+            self.tourelles = self.tourelles1
+            
+        for tourelle in self.tourelles:
+            if self.matrice[tourelle["y"]][tourelle["x"]]["char"] != "X":
+                self.matrice[tourelle["y"]][tourelle["x"]]["char"] = "T"
+                self.matrice[tourelle["y"]][tourelle["x"]]["direction"] = tourelle["direction"]
+        
         
 class Carrier (Vehicule):
     size = {"x":4,"y":9}
@@ -260,7 +280,7 @@ class Submarine (Vehicule):
     collide2 = ["obstacle"]
     instance = 0
     imageLoc = "submarine.png"
-    tourelles = [{"x":0,"y":0,"direction":"up"},{"x":1,"y":0,"direction":"up"},{"x":2,"y":0,"direction":"up"}]
+    tourelles = [{"x":0,"y":0,"direction":"up"},{"x":2,"y":0,"direction":"up"}]
     dynamite = False
     def __init__(self, map ,position :Dict[int,int], direction :str,player :str,color :tuple = None):
         self.type = {"char":"S"}
