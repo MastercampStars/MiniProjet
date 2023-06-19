@@ -6,6 +6,7 @@ from Vehicule import LittleBoat
 from Map import Map
 from Bullet import Bullet
 from Base import Base
+from Obstacle import Obstacle
 clock = pygame.time.Clock()
 
 #permet de récuperer l'angle en fonction de la direction, utile pour la rotation des images des bateaux
@@ -64,7 +65,6 @@ def Main ():
 
     # Définition des paramètres de la fenêtre
     ratio = 1920/1080
-    print(ratio)
     hauteur_fenetre  = 400
     largeur_fenetre = int(ratio*hauteur_fenetre )
 
@@ -106,7 +106,8 @@ def Main ():
     for vehicule in NewVehicules:
         map.addElement(vehicule)
     
-    #map.randGenerate()
+    
+    map.randGenerate()
     
 
     players = []

@@ -28,6 +28,7 @@ class Map:
         if hasattr(element, 'life'):
             newLife = 0
         # On parcours la matrice de l'element et on les entre dans la matrice de la map en fonction de la direction de l'element et de sa position Front
+        
         for y in range(element.size["y"]):
             for x in range(element.size["x"]):
                 if hasattr(element, 'life'):
@@ -113,6 +114,7 @@ class Map:
             if(not self.collide(element)):
                 self.elements.append(element)
                 self.reloadMatrice()
+                return True
                 
     
     # Supprime un element de la map si il existe (bateau, obstacle, etc...)
@@ -151,7 +153,12 @@ class Map:
         nonCollision = [self.type["char"],"J","T","Q"]
         for y in range(len(matrice1)):
             for x in range(len(matrice1[0])):
+                if (matrice1[y][x]["char"] not in nonCollision and matrice2[y][x]["char"] not in nonCollision and "id" not in matrice1[y][x]):
+                    print ( matrice1[y][x])
                 if (matrice1[y][x]["char"] not in nonCollision and matrice2[y][x]["char"] not in nonCollision and not matrice1[y][x]["id"] == matrice2[y][x]["id"]):
+                    # if ("id" not in matrice1[y][x]["id"] or "id" not in matrice2[y][x]["id"] ):
+                    #     print("collision")
+                    #     return True
                     print("collision",matrice1[y][x]["char"],matrice2[y][x]["char"])
                     return True
         return False
@@ -159,21 +166,16 @@ class Map:
     #Génération aléatoire de la map
     def randGenerate(self):
         
-        
         # On génère un nombre aléatoire d'obstacle
-        number_Obstacle = random.randint(5, 10)
-        for i in range(number_Obstacle):
-            
-            # On génère aléatoirement la position, la taille et la direction de l'obstacle
-            pos_X = random.randint(0, self.size["x"]-1)
-            pos_Y = random.randint(0, self.size["y"]-1)
-            size_X = random.randint(1, 10)
-            size_Y = random.randint(1, 10)
-            direction = random.choice(["up","down","right","left"])
-            
+        number_Obstacle = random.randint(5, 6)
+        cpt=0
+        while(cpt<number_Obstacle):
             # On ajoute l'obstacle à la map si il n'y a pas de collision
-            obstacle = Vehicule({"char":"R","able":True,"color":(255,255,255),"player":0},self.copy(),{"x":pos_X,"y":pos_Y},direction,{"x":size_X,"y":size_Y})
-            self.addElement(obstacle)       
+            obstacle = Obstacle(self.copy())
+            self.addElement(obstacle) 
+            if (self.addElement(obstacle)):
+                cpt+=1
+             
         
         
     # Copie de la map

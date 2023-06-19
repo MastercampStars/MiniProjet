@@ -1,6 +1,5 @@
 from Element import Element
 from Map import Map
-from Vehicule import Vehicule
 from typing import Dict, List
 
 class Base(Element):
