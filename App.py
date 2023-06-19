@@ -91,6 +91,11 @@ def Main (): # -------------------------------------------Initialisation du Main
     menu2 = pygame.image.load("images/small_scroll3.png").convert_alpha()
     space = pygame.image.load("images/space_bar1.png").convert_alpha()
     canon = pygame.image.load("images/canon1.png").convert_alpha()
+    castleP1 = pygame.image.load("images/Castle_grey22.png").convert_alpha()
+    redFlag = pygame.image.load("images/red_flag1.png").convert_alpha()
+    yellowFlag = pygame.image.load("images/yellow_flag1.png").convert_alpha()
+
+
     # Remplissage des listes pour l'affichage des images et ajout des bateaux jouables à la carte
     for boats in teamsBoats:
         # Création des listes de charactéristiques par team
@@ -174,6 +179,7 @@ def Main (): # -------------------------------------------Initialisation du Main
     angles = allAngles[indexTeam]
     nbPlayers = len(teamsBoats)
     show_popup = True
+    game_over = False
 
     # ---------------------------------------------------Boucle principale du jeu---------------------------------------------------
     while not close:
@@ -233,6 +239,8 @@ def Main (): # -------------------------------------------Initialisation du Main
                     
                     elif evenement.key == pygame.K_m:
                         show_popup = True
+                    elif evenement.key == pygame.K_v:
+                        game_over = True
                 elif evenement.key == pygame.K_SPACE:
                     show_popup = False
 
@@ -392,6 +400,37 @@ def Main (): # -------------------------------------------Initialisation du Main
         # Appel de la fonction pour afficher le menu pop-up
         # show_popup_menu()
 
+
+
+        def show_game_over_menu(winner) :
+            RED = (255,0,0)
+            transparent_black = (0, 0, 0, 228)  # Semi-transparent black
+            police_end = pygame.font.Font(game_font, 50)
+            # Game Over text
+            game_over_text = police_end.render("GAME OVER", True, RED)
+
+            # Winner text
+            winner_text = police.render(f"Player {winner} wins!", True, (255, 255, 255))
+
+            # Get the center position of the screen
+            screen_center = screen.get_rect().center
+
+            # Create a transparent surface to cover the screen
+            filter_surface = pygame.Surface(screen.get_size(), pygame.SRCALPHA)
+            filter_surface.fill(transparent_black)
+
+
+            # Draw the filtered surface
+            screen.blit(filter_surface, (0, 0))
+
+            # Draw the game over text in the center of the screen
+            game_over_text_rect = game_over_text.get_rect(center=screen_center)
+            screen.blit(game_over_text, game_over_text_rect)
+
+            # Draw the winner text below the game over text
+            winner_text_rect = winner_text.get_rect(midtop=(screen_center[0], game_over_text_rect.bottom + 20))
+            screen.blit(winner_text, winner_text_rect)
+
         # Déplacement du bateau
         if direction is not None:
             # Faites ici le traitement de déplacement du bateau en fonction de la direction et de la distance
@@ -519,6 +558,11 @@ def Main (): # -------------------------------------------Initialisation du Main
                                 # screen.blit(darken_surface, (x * cells_Size, y * cells_Size))
                     inlife_boats += 1
 
+            screen.blit(castleP1, (1410, hauteur_fenetre// 2))
+            screen.blit(castleP1, (0, hauteur_fenetre// 2))
+            screen.blit(redFlag, (1410, (hauteur_fenetre// 2)-45))
+            screen.blit(yellowFlag, (5, (hauteur_fenetre// 2)-35))
+
             # Si tous les bateaux de l'équipe sont morts, on affiche un message
             if inlife_boats == 0:
                 print("Team ", i+1, " is dead")
@@ -529,6 +573,9 @@ def Main (): # -------------------------------------------Initialisation du Main
             # print("lord")
             show_popup_menu()       
           
+        if game_over:
+            # print("lord")
+            show_game_over_menu(1)     
         # Mise à jour de la fenêtre  
         pygame.display.flip()
         
