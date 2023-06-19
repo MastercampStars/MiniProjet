@@ -309,7 +309,7 @@ class Submarine (Vehicule):
                     if self.matrice[y][x]["char"] != "X":
                         self.matrice[y][x]["char"] = "S"
             for tourelle in self.tourelles:
-                if self.matrice[tourelle["y"]][tourelle["x"]] != "X":
+                if self.matrice[tourelle["y"]][tourelle["x"]]["char"]  != "X":
                     self.matrice[tourelle["y"]][tourelle["x"]]["char"] = "T"
                     self.matrice[tourelle["y"]][tourelle["x"]]["direction"] = tourelle["direction"]
         
