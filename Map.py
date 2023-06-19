@@ -4,6 +4,7 @@ from Bullet import Bullet
 from Obstacle import Obstacle
 from Element import Element
 from typing import List
+
 class Map:
     # Constructeur qui prend en parametre la taille {"x":taille_x, "y":taille_y}, le type de case par défaut {"char":" "} et la liste des elements de la map (bateaux, obstacles, etc...)
     def __init__(self, size, type, elements:List[Element] = []):
@@ -49,6 +50,7 @@ class Map:
                 # C'est une sécurité pour éviter les erreurs de dépassement de la matrice
                 if (posX >= 0 and posX < self.size["x"] and posY >= 0 and posY < self.size["y"]):   
                     self.matrice[posY][posX] = element.matrice[y][x]
+                
                     
                 # Si la case est une tourelle, on tire une bullet en fonction de la direction de la tourelle et de la direction du bateau
                 bulletDirection = None
@@ -71,7 +73,9 @@ class Map:
                     bullet = Bullet({"x":posX,"y":posY},bulletDirection,element.type)
                     self.bullets.append(bullet)
                     bullet.run()
-        element.life = newLife
+        if (hasattr(element,"life")):
+                    
+            element.life = newLife
                                        
         
     # Recharge la matrice de la map avec tous ses elements
@@ -84,7 +88,7 @@ class Map:
     def reloadBullets(self):
         for bullet in self.bullets:
             
-            nonCollisions = [self.type["char"],"X","f"]
+            nonCollisions = [self.type["char"],"X","f","Q"]
             
             #supprier la bullet si elle sort de la map
             if (bullet.position["x"] < 0 or bullet.position["x"] >= self.size["x"] or bullet.position["y"] < 0 or bullet.position["y"] >= self.size["y"]):
@@ -109,6 +113,7 @@ class Map:
             if(not self.collide(element)):
                 self.elements.append(element)
                 self.reloadMatrice()
+                
     
     # Supprime un element de la map si il existe (bateau, obstacle, etc...)
     def removeElement(self,element:Element):
@@ -143,7 +148,7 @@ class Map:
         self.reloadMatrice()
         
         # On compare les deux matrices pour voir si il y a une supperposition de charactère pour une case de la map (autre que le charactère de la map)
-        nonCollision = [self.type["char"],"J","T"]
+        nonCollision = [self.type["char"],"J","T","Q"]
         for y in range(len(matrice1)):
             for x in range(len(matrice1[0])):
                 if (matrice1[y][x]["char"] not in nonCollision and matrice2[y][x]["char"] not in nonCollision and not matrice1[y][x]["id"] == matrice2[y][x]["id"]):

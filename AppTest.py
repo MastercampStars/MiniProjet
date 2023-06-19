@@ -5,6 +5,7 @@ from Vehicule import *
 from Vehicule import LittleBoat
 from Map import Map
 from Bullet import Bullet
+from Base import Base
 clock = pygame.time.Clock()
 
 #permet de récuperer l'angle en fonction de la direction, utile pour la rotation des images des bateaux
@@ -44,11 +45,12 @@ def getImages(elements,cells_Size,players,teamsVehicules):
             
         # Redimensionnez l'image pour s'adapter à la taille du bateau et l'ajouter à la liste des images
         # Chargement de l'image du bateau par défaut
-        elementImage = pygame.image.load("assets/"+element.imageLoc).convert_alpha()
-        image = pygame.transform.scale(elementImage, ((element.size["x"]-0.5) * cells_Size, (element.size["y"]-0.5)*cells_Size))
+        if(hasattr(element,"life")):
+            elementImage = pygame.image.load("assets/"+element.imageLoc).convert_alpha()
+            image = pygame.transform.scale(elementImage, ((element.size["x"]-0.5) * cells_Size, (element.size["y"]-0.5)*cells_Size))
             
         # Faites pivoter l'image en fonction de l'angle du bateau et ajoutez-la à la liste des images
-        element.image = pygame.transform.rotate(image, - element.imageAngle)
+            element.image = pygame.transform.rotate(image, - element.imageAngle)
     return teamsVehicules,players
 
 
@@ -63,7 +65,7 @@ def Main ():
     # Définition des paramètres de la fenêtre
     ratio = 1920/1080
     print(ratio)
-    hauteur_fenetre  = 900
+    hauteur_fenetre  = 400
     largeur_fenetre = int(ratio*hauteur_fenetre )
 
     cells_Size = 17
@@ -79,8 +81,8 @@ def Main ():
 
 
     # Création de la carte. Elle prend en parametre:(la taille de la carte, le dictionnaire du type de case par défaut)
-    mapSize = 100
-    map = Map({"x":mapSize,"y":int(mapSize*ratio)},{"char":""})
+    mapSize = 70
+    map = Map({"x":mapSize,"y":int(50)},{"char":"*"})
     # Création des bateaux. Ils prennent en parametre:({le dictionnaire du type de case}, la carte, {la position du Front du bateau}, la direction du bateau, {la taille du bateau})
     vehicule1 = Carrier(map,{"x":18,"y":25},"left","player1",color = (255,0,0))
     vehicule2 = BigBoat(map,{"x":30,"y":25},"up","player1",color = (255,0,0))
@@ -88,6 +90,14 @@ def Main ():
     vehicule3 = MedicaleBoat(map,{"x":18,"y":40},"right","player2")
     vehicule4 = Submarine(map,{"x":40,"y":25},"down","player2")
     vehicule5 = Jet(map,{"x":40,"y":40},"down")
+    
+    # Création des bases 
+    base1 = Base(map,"up","player1", (255, 0, 0))
+
+    base2 = Base(map,"up","player2",(0,255,0))
+    # Ajout des bases à la carte
+    map.addElement(base1)
+    map.addElement(base2)
     
     # Création de la liste des bateaux jouables
     NewVehicules = [vehicule1,vehicule2,vehicule3,vehicule4]

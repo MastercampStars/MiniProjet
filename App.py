@@ -1,7 +1,7 @@
 import pygame
 from pygame.locals import *
 import cProfile
-from Vehicule import Boat
+from Vehicule import Vehicule
 from Map import Map
 from Bullet import Bullet
 clock = pygame.time.Clock()
@@ -46,11 +46,11 @@ def Main (): # -------------------------------------------Initialisation du Main
     map = Map({"x":85,"y":49},{"char":"*"})
     # Création des bateaux. Ils prennent en parametre:({le dictionnaire du type de case}, la carte, {la position du Front du bateau}, la direction du bateau, {la taille du bateau})
     #Team 1
-    boat1 = Boat({"char":"P","color":(0,255,0),"able":True,"player":1},map,{"x":18,"y":25},"left",{"x":2,"y":7})
-    boat2 = Boat({"char":"P","color":(0,255,0),"able":True,"player":1},map,{"x":50,"y":25},"left",{"x":2,"y":7})
+    boat1 = Vehicule({"char":"P","color":(0,255,0),"able":True,"player":1},map,{"x":18,"y":25},"left",{"x":2,"y":7})
+    boat2 = Vehicule({"char":"P","color":(0,255,0),"able":True,"player":1},map,{"x":50,"y":25},"left",{"x":2,"y":7})
     # Team 2
-    boat3 = Boat({"char":"P","color":(255,0,0),"able":True,"player":2},map,{"x":22,"y":40},"left",{"x":3,"y":7})
-    boat4 = Boat({"char":"P","color":(255,0,0),"able":True,"player":2},map,{"x":50,"y":40},"left",{"x":1,"y":7})
+    boat3 = Vehicule({"char":"P","color":(255,0,0),"able":True,"player":2},map,{"x":22,"y":40},"left",{"x":3,"y":7})
+    boat4 = Vehicule({"char":"P","color":(255,0,0),"able":True,"player":2},map,{"x":50,"y":40},"left",{"x":1,"y":7})
     
     # Création d'une liste par team
     team1 = [boat1,boat2]
@@ -60,7 +60,7 @@ def Main (): # -------------------------------------------Initialisation du Main
     teamsBoats = [team1,team2]
     
     # Chargement de l'image du bateau par défaut (on pourra changer l'image en fonction du type de bateau plus tard si besoin)
-    boatImage = pygame.image.load("assets/corvette.png").convert_alpha()
+    boatImage = pygame.image.load("assets/littleBoat.png").convert_alpha()
     
     
     # Remplissage des listes pour l'affichage des images et ajout des bateaux jouables à la carte
