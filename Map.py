@@ -84,8 +84,6 @@ class Map:
     def reloadBullets(self):
         for bullet in self.bullets:
             
-            nonCollisions = [self.type["char"],"X","f"]
-            
             #supprier la bullet si elle sort de la map
             if (bullet.position["x"] < 0 or bullet.position["x"] >= self.size["x"] or bullet.position["y"] < 0 or bullet.position["y"] >= self.size["y"]):
                 self.bullets.remove(bullet)
@@ -93,11 +91,14 @@ class Map:
                 self.bullets.remove(bullet)
             
             #supprimer la bullet si elle touche un obstacle
-            
-            elif (self.matrice[bullet.position["y"]][bullet.position["x"]]["char"] not in nonCollisions):
-                if (self.matrice[bullet.position["y"]][bullet.position["x"]]["id"] != bullet.type["id"]):
-                    self.bullets.remove(bullet)
-                    self.matrice[bullet.position["y"]][bullet.position["x"]]["char"] = "X"
+            elif "collide" in  self.matrice[bullet.position["y"]][bullet.position["x"]] :
+                if ( "bullet" in self.matrice[bullet.position["y"]][bullet.position["x"]]["collide"] ):
+                    if (self.matrice[bullet.position["y"]][bullet.position["x"]]["id"] != bullet.type["id"]):
+                        self.bullets.remove(bullet)
+                        newCollide = self.matrice[bullet.position["y"]][bullet.position["x"]]["collide"].copy()
+                        newCollide.remove("bullet")
+                        self.matrice[bullet.position["y"]][bullet.position["x"]]["collide"]= newCollide
+                        self.matrice[bullet.position["y"]][bullet.position["x"]]["char"] = "X"
                 
             if (bullet in self.bullets):
                 bullet.run()
@@ -143,12 +144,29 @@ class Map:
         self.reloadMatrice()
         
         # On compare les deux matrices pour voir si il y a une supperposition de charactère pour une case de la map (autre que le charactère de la map)
-        nonCollision = [self.type["char"],"J","T"]
+
         for y in range(len(matrice1)):
-            for x in range(len(matrice1[0])):
-                if (matrice1[y][x]["char"] not in nonCollision and matrice2[y][x]["char"] not in nonCollision and not matrice1[y][x]["id"] == matrice2[y][x]["id"]):
-                    print("collision",matrice1[y][x]["char"],matrice2[y][x]["char"])
-                    return True
+            for x in range(len(matrice1[0])): 
+                
+                
+                collide1 = []
+                collide2 = []
+                if ("collide" in matrice1[y][x]):
+                    collide1 = matrice1[y][x]["collide"].copy()
+                    if ("bullet" in collide1):
+                        collide1.remove("bullet")
+                if ("collide" in matrice2[y][x]):    
+                    collide2 = matrice2[y][x]["collide"].copy()
+                  
+                if (len(collide1) > 0 and len(collide2) > 0):
+                    if (not matrice1[y][x]["id"] == matrice2[y][x]["id"]):
+                        for char in collide1:
+                            if (char in collide2):
+                                print("matrice1",matrice1[y][x]["collide"],matrice2[y][x]["collide"])
+                                print("collision",matrice1[y][x]["char"],matrice2[y][x]["char"])
+                                return True
+                
+                
         return False
         
     #Génération aléatoire de la map

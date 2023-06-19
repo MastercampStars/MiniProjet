@@ -59,28 +59,30 @@ def getImages(elements,cells_Size,players,teamsVehicules):
 def Main ():
     # Initialisation de Pygame
     pygame.init()
+    
 
-    # Définition des paramètres de la fenêtre
-    ratio = 1920/1080
-    print(ratio)
-    hauteur_fenetre  = 900
-    largeur_fenetre = int(ratio*hauteur_fenetre )
 
-    cells_Size = 17
-
-    # Création de la fenêtre Resizable
-    screen = pygame.display.set_mode((largeur_fenetre, hauteur_fenetre), pygame.RESIZABLE)
+    # Création de la fenêtre plein ecran pour récuperer les bonnes dimentions
+    screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.display.set_caption("Bataille navale")
+    screen_width = screen.get_width()
+    screen_height = screen.get_height()*0.95
+    print(screen_width,screen_height)
+    
+    # Définition des paramètres de la fenêtre
+    mapSize = 100
+    ratio = screen_width/screen_height
+    cells_Size = screen_width//mapSize
+    screen = pygame.display.set_mode((int(screen_width*0.9),int(screen_height *0.9)), pygame.RESIZABLE)
     
 
     
     # Chargement de la police de caractères
     police = pygame.font.Font(None, cells_Size)
 
+     # Création de la carte. Elle prend en parametre:(la taille de la carte, le dictionnaire du type de case par défaut)
 
-    # Création de la carte. Elle prend en parametre:(la taille de la carte, le dictionnaire du type de case par défaut)
-    mapSize = 100
-    map = Map({"x":mapSize,"y":int(mapSize*ratio)},{"char":""})
+    map = Map({"x":mapSize+1,"y":int(mapSize//ratio)},{"char":"*"})
     # Création des bateaux. Ils prennent en parametre:({le dictionnaire du type de case}, la carte, {la position du Front du bateau}, la direction du bateau, {la taille du bateau})
     vehicule1 = Carrier(map,{"x":18,"y":25},"left","player1",color = (255,0,0))
     vehicule2 = BigBoat(map,{"x":30,"y":25},"up","player1",color = (255,0,0))
@@ -124,8 +126,15 @@ def Main ():
     distanceImage = 0
     diffRotation = 0
     
-    # Boucle principale du jeu
+    # ---------------------------------------------------------------Boucle principale du jeu--------------------------------------------------------------------
     while not close:
+        screen_width = screen.get_width()
+        screen_height = screen.get_height()*0.95        
+        cells_Size = screen_width//mapSize
+        police = pygame.font.Font(None, cells_Size)
+        loadImages = True
+        
+        
 
         #chargement de la matrice de la carte
         matrice = map.getMatrice()
@@ -179,6 +188,8 @@ def Main ():
                         if vehicule.life == 0 :
                             indexVehicule = (indexVehicule+1)%len(vehicules)
                             vehicule = vehicules[indexVehicule]
+                        
+
 
 
         #chargement des images

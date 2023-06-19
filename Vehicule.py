@@ -86,6 +86,9 @@ class Vehicule(Element):
         #le bateau est vers le haut
         newFront = self.Front.copy()
         newDirection = self.direction
+        if isinstance(self, Jet):
+            backSpeed = 0
+        else: backSpeed = -self.maxSpeed // 2
 
         if direction == "up" :
             #le bateau avance vers le haut
@@ -94,7 +97,7 @@ class Vehicule(Element):
                 newFront["y"] -= self.speed 
                 newDirection = "up"
             else:
-                self.speed = -self.maxSpeed // 2
+                self.speed = backSpeed
                 newFront["y"] += self.speed
         
         elif direction == "down" :
@@ -104,7 +107,7 @@ class Vehicule(Element):
                 newFront["y"] += self.speed
                 newDirection = "down"
             else:
-                self.speed = -self.maxSpeed // 2
+                self.speed = backSpeed
                 newFront["y"] -= self.speed
         
         elif direction == "right" :
@@ -114,7 +117,7 @@ class Vehicule(Element):
                 newFront["x"] += self.speed
                 newDirection = "right"
             else:
-                self.speed = -self.maxSpeed // 2
+                self.speed = backSpeed
                 newFront["x"] -= self.speed
         
         elif direction == "left" :
@@ -124,7 +127,7 @@ class Vehicule(Element):
                 newFront["x"] -= self.speed
                 newDirection = "left"
             else:
-                self.speed = -self.maxSpeed // 2
+                self.speed = backSpeed
                 newFront["x"] += self.speed
     
         else:
@@ -174,6 +177,7 @@ class Vehicule(Element):
     
 class LittleBoat(Vehicule):
     size = {"x": 3, "y": 5}
+    collide =  ["bullet","element"]
     speed = 3
     imageLoc = "littleBoat.png"
     instance = 0
@@ -183,6 +187,7 @@ class LittleBoat(Vehicule):
         self.type = {"char": "L"}
         self.type["player"] = player
         self.type["color"] = color or (255, 255, 255)
+        self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
         LittleBoat.instance += 1
         super().__init__(self.type, map, position, direction, self.size, self.speed, self.tourelles)
@@ -193,6 +198,7 @@ class LittleBoat(Vehicule):
  
 class MedicaleBoat (Vehicule):
     size = {"x":2,"y":7}
+    collide =  ["bullet","element"]
     speed = 4
     instance = 0
     imageLoc = "medicaleBoat.png"
@@ -200,6 +206,7 @@ class MedicaleBoat (Vehicule):
         self.type = {"char":"M"}
         self.type["player"] = player
         self.type["color"] = color or (255,255,255)
+        self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
         MedicaleBoat.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed)
@@ -208,6 +215,7 @@ class MedicaleBoat (Vehicule):
 class BigBoat (Vehicule):
     size = {"x":3,"y":13}
     speed = 4
+    collide =  ["bullet","element"]
     instance = 0
     imageLoc = "bigBoat.png"
     tourelles = [{"x":1,"y":0,"direction":"up"},{"x":1,"y":1,"direction":"up"}]
@@ -215,6 +223,7 @@ class BigBoat (Vehicule):
         self.type = {"char":"B"}
         self.type["player"] = player
         self.type["color"] = color or (255,255,255)
+        self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
         BigBoat.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
@@ -222,6 +231,7 @@ class BigBoat (Vehicule):
 class Carrier (Vehicule):
     size = {"x":4,"y":9}
     speed = 4
+    collide =  ["bullet","element"]
     instance = 0
     imageLoc = "carrier.png"
     tourelles = [{"x":1,"y":0,"direction":"up"},{"x":1,"y":1,"direction":"up"},{"x":1,"y":2,"direction":"up"}]
@@ -229,6 +239,7 @@ class Carrier (Vehicule):
         self.type = {"char":"C"}
         self.type["player"] = player
         self.type["color"] = color or (255,255,255)
+        self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
         Carrier.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
@@ -240,6 +251,7 @@ class Carrier (Vehicule):
 class Submarine (Vehicule):
     size = {"x":3,"y":7}
     speed = 4
+    collide =  ["bullet","element"]
     instance = 0
     imageLoc = "submarine.png"
     tourelles = [{"x":0,"y":0,"direction":"up"},{"x":1,"y":0,"direction":"up"},{"x":2,"y":0,"direction":"up"}]
@@ -247,17 +259,45 @@ class Submarine (Vehicule):
         self.type = {"char":"S"}
         self.type["player"] = player
         self.type["color"] = color or (255,255,255)
+        self.type["collide"] = self.collide.copy()
         self.type["id"] = self.type["char"] + str(self.instance)
         Submarine.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
         self.type["id"] = "S" + str(Submarine.instance)
     
+    def special(self):
+        if(self.type["collide"] != []):
+            print("submarine dive", self.type["collide"])
+            self.type["collide"] = []
+            print("submarine dive", self.type["collide"])
+            for y in range(self.size["y"]):
+                for x in range(self.size["x"]):
+                    self.matrice[y][x]["collide"] = []
+                    if self.matrice[y][x]["char"] != "X":
+                        self.matrice[y][x]["char"] = "w"
+        
+        elif(self.type["collide"] == []):
+            print("submarine dive", self.type["collide"])
+            self.type["collide"] = Submarine.collide
+            print("submarine dive", self.type["collide"])
+            for y in range(self.size["y"]):
+                for x in range(self.size["x"]):
+                    self.matrice[y][x]["collide"] = self.type["collide"].copy()
+                    if self.matrice[y][x]["char"] != "X":
+                        self.matrice[y][x]["char"] = "S"
+            for tourelle in self.tourelles:
+                if self.matrice[tourelle["y"]][tourelle["x"]] != "X":
+                    self.matrice[tourelle["y"]][tourelle["x"]]["char"] = "T"
+                    self.matrice[tourelle["y"]][tourelle["x"]]["direction"] = tourelle["direction"]
+        
+                
     
 
 
 class Jet( Vehicule):
     size = {"x":3,"y":3}
     speed = 6
+    collide =  ["bullet"]
     instance = 0
     imageLoc = "jet.png"
     tourelles = [{"x":1,"y":0,"direction":"up"}]
@@ -265,6 +305,7 @@ class Jet( Vehicule):
         self.type = {"char":"J"}
         self.type["player"] = player or None
         self.type["color"] = color or (255,255,255)
+        self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
         Jet.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
