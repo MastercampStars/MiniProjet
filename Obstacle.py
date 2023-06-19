@@ -6,7 +6,7 @@ class Obstacle(Element):
     
     instance=0
     def __init__(self, map_instance ,matrice :List[List[Dict[str, str]]]= None):
-        self.type = {"char":"O"} # or self.type={"Obstacle"}    
+        self.type = {"char":"O"}    
         self.direction = random.choice(["up", "down", "right", "left"])
         # On génère aléatoirement la position, la taille et la direction de l'obstacle
         self.size = {"x":random.randint(1, 10),"y":random.randint(1, 10)}

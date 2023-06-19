@@ -126,7 +126,7 @@ class Map:
          
     # Detecte si le bateau entre en collision avec un autre bateau
     def collide(self,vehicule,lastVehicule:Vehicule = None):
-        # On verrifie si le bateau est dans la map sinon on detecte une collision
+        # On verifie si le bateau est dans la map sinon on detecte une collision
         if (vehicule.Front["x"] < 0 or vehicule.Front["x"] >= self.size["x"] or vehicule.Front["y"] < 0 or vehicule.Front["y"] >= self.size["y"]):
             print("out of map")
             return True
@@ -175,8 +175,18 @@ class Map:
             self.addElement(obstacle) 
             if (self.addElement(obstacle)):
                 cpt+=1
-             
+
         
+    #Vérifie si le bateau est bien entièrement dans la base avant l'explosion
+    def canExplode(self, Vehicule):
+        for element in self.elements:
+            if element.type["char"] == "Q":
+                if element.type["player"] != Vehicule.type["player"]:
+                    Base = element
+        if (((Vehicule.Front["x"]>=Base.Front["x"]) and (Vehicule.Front["x"]<=Base.Back["x"]))) and (((Vehicule.Front["y"]>=Base.Front["y"]) and (Vehicule.Front["y"]<=Base.Back["y"]))): 
+            if(((Vehicule.Back["x"]>=Base.Front["x"]) and (Vehicule.Back["x"]<=Base.Back["x"]))) and (((Vehicule.Back["y"]>=Base.Front["y"]) and (Vehicule.Front["y"]<=Base.Back["y"]))):
+                return True
+        return False
         
     # Copie de la map
     def copy(self):

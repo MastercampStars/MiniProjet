@@ -190,6 +190,11 @@ def Main ():
                         if vehicule.life == 0 :
                             indexVehicule = (indexVehicule+1)%len(vehicules)
                             vehicule = vehicules[indexVehicule]
+                    elif evenement.key == pygame.K_x:
+                        print("EXPLOSIOOONN",map.canExplode(vehicule))
+                        close=True
+                    
+                        
 
 
         #chargement des images
@@ -263,7 +268,7 @@ def Main ():
         #print("diffRotation : ", diffRotation)
             
 
-
+        
         
         
         #print(positions[indexVehicule])

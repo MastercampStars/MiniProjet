@@ -3,7 +3,7 @@ from Map import Map
 from typing import Dict, List
 
 class Base(Element):
-    size = {"x": int(4), "y": int(13)}
+    size = {"x": int(5), "y": int(15)}
         
     def __init__(self, map_instance: Map , direction :str, player :str,color :tuple = None, matrice :List[List[Dict[str, str]]]= None):
         self.type = {"char":"Q"}
