@@ -86,14 +86,14 @@ def Main ():
     # Création des bateaux. Ils prennent en parametre:({le dictionnaire du type de case}, la carte, {la position du Front du bateau}, la direction du bateau, {la taille du bateau})
     vehicule1 = Carrier(map,{"x":18,"y":25},"left","player1",color = (255,0,0))
     vehicule2 = BigBoat(map,{"x":30,"y":25},"up","player1",color = (255,0,0))
-    
+    vehicule5 = BigBoat(map,{"x":30,"y":25},"up","player1",color = (255,0,0))
     vehicule3 = MedicaleBoat(map,{"x":18,"y":40},"right","player2")
     vehicule4 = Submarine(map,{"x":40,"y":25},"down","player2")
 
 
     
     # Création de la liste des bateaux jouables
-    NewVehicules = [vehicule1,vehicule2,vehicule3,vehicule4]
+    NewVehicules = [vehicule1,vehicule2,vehicule3,vehicule4,vehicule5]
     
     # Ajout des bateaux jouables à la carte
     for vehicule in NewVehicules:

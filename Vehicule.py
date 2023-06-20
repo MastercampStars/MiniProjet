@@ -140,6 +140,7 @@ class Vehicule(Element):
             self.direction = newDirection
             self.reloadBack()
             self.map.reloadMatrice()
+            return True
         
     
     # Permet d'actionner les tourelles du bateau
