@@ -364,42 +364,6 @@ def Main (): # -------------------------------------------Initialisation du Main
 
 
 
-            # while True:
-            #     for event in pygame.event.get():
-            #         if event.type == pygame.QUIT:
-            #             pygame.quit()
-            #             # sys.exit()
-            #         elif event.type == pygame.KEYDOWN:
-            #             if event.key == pygame.K_RETURN:
-            #                 return  #
-
-
-        # def show_popup_menu():
-        # # Code pour afficher le menu pop-up
-        #      # Define the colors
-        #     BROWN = (139, 69, 19)
-        #     WHITE = (255, 255, 255)
-
-        #     # Create a surface for the menu rectangle
-        #     menu_surface = pygame.Surface((400, 200))
-        #     menu_surface.fill(BROWN)
-        #     menu_rect = menu_surface.get_rect(center=(largeur_fenetre // 2, hauteur_fenetre // 2))
-
-        #     # Create a font object for the text
-        #     font = pygame.font.Font(None, 24)
-
-        #     # Create a text surface and get its rect
-        #     text = "Your goal is to destroy the enemy's base or sink their ships"
-        #     text_surface = font.render(text, True, WHITE)
-        #     text_rect = text_surface.get_rect(center=(largeur_fenetre // 2, hauteur_fenetre // 2))
-
-        #     # Blit the menu surface and text surface onto the screen
-        #     screen.blit(menu_surface, menu_rect)
-        #     screen.blit(text_surface, text_rect)
-
-        # Appel de la fonction pour afficher le menu pop-up
-        # show_popup_menu()
-
 
 
         def show_game_over_menu(winner) :
