@@ -2,7 +2,7 @@ from Element import Element
 from typing import Dict, List
 
 class Base(Element):
-    size = {"x": int(6), "y": int(13)}
+    size = {"x": int(13), "y": int(13)}
         
     def __init__(self, map_instance, direction :str, player :str,color :tuple = None, matrice :List[List[Dict[str, str]]]= None):
         self.type = {"char":"Q","id":"B"}
@@ -10,10 +10,12 @@ class Base(Element):
         self.type["color"] = color or (255,255,255)
         self.type["collide"] = ["base"]
         self.direction=direction
-        if (player=="player1"):
+        if (player==1):
             self.position={"x":0,"y":int(map_instance.size["y"]*0.5)-self.size["y"]//2}
+            self.imageLoc = "Base_Jaune.png"
         else:
             self.position={"x":map_instance.size["x"]-self.size["x"],"y":int(map_instance.size["y"]*0.5)-self.size["y"]//2}
+            self.imageLoc = "Base_Rouge.png"
         self.matrice = matrice or [[self.type.copy() for i in range(self.size["x"])] for j in range(self.size["y"])]       
         self.Front = self.position 
         self.Back = {}

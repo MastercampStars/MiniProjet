@@ -32,19 +32,19 @@ def getImages(elements,cells_Size,players,teamsVehicules):
         # Définir la position de l'image en fonction de la direction du bateau et l'ajouter à la liste des positions
         # La position de l'image correspond toujours à la case la plus en haut à gauche du bateau
         if element.direction == "up":
-            element.imagePosition = (element.Front["x"]*cells_Size,element.Front["y"]*cells_Size)
+            element.imagePosition = (int(element.Front["x"]*cells_Size),int(element.Front["y"]*cells_Size))
         elif element.direction == "right":
-            element.imagePosition = (element.Back["x"]*cells_Size,(element.Back["y"]-(element.size["x"]-1))*cells_Size)
+            element.imagePosition = (int(element.Back["x"]*cells_Size),int((element.Back["y"]-(element.size["x"]-1))*cells_Size))
         elif element.direction == "down":
-            element.imagePosition = (element.Back["x"]*cells_Size,element.Back["y"]*cells_Size)
+            element.imagePosition = (int(element.Back["x"]*cells_Size),int(element.Back["y"]*cells_Size))
         elif element.direction == "left":
-            element.imagePosition = (element.Front["x"]*cells_Size,(element.Front["y"]-(element.size["x"]-1))*cells_Size)
+            element.imagePosition = (int(element.Front["x"]*cells_Size),int((element.Front["y"]-(element.size["x"]-1))*cells_Size))
             
         # Redimensionnez l'image pour s'adapter à la taille du bateau et l'ajouter à la liste des images
         # Chargement de l'image du bateau par défaut
-        if(hasattr(element,"life")):
+        if(hasattr(element,"imageLoc")):
             elementImage = pygame.image.load("assets/"+element.imageLoc).convert_alpha()
-            image = pygame.transform.scale(elementImage, ((element.size["x"]-0.5) * cells_Size, (element.size["y"]-0.5)*cells_Size))
+            image = pygame.transform.scale(elementImage, (int((element.size["x"]-0.5) * cells_Size), int((element.size["y"]-0.5)*cells_Size)))
             # Faites pivoter l'image en fonction de l'angle du bateau et ajoutez-la à la liste des images
             element.image = pygame.transform.rotate(image, - element.imageAngle)
     
@@ -63,33 +63,21 @@ def Main ():
     pygame.display.set_caption("Bataille navale")
     
     #responsive
-    #largeur_fenetre = screen.get_width()
-    #hauteur_fenetre = screen.get_height()*0.95
+    largeur_fenetre = screen.get_width()
+    hauteur_fenetre = screen.get_height()*0.95
     
     
-    largeur_fenetre = 1520
-    hauteur_fenetre = 780
-    cells_Size = 15
     print(largeur_fenetre,hauteur_fenetre)
     
     # Définition des paramètres de la fenêtre
     mapSize = 100
-    ratio = largeur_fenetre/hauteur_fenetre
+    ratio = largeur_fenetre/(hauteur_fenetre*0.98)
     #responsive
-    #cells_Size = largeur_fenetre//mapSize
+    cells_Size = largeur_fenetre/mapSize
     game_font = 'assets/joystix monospace.ttf'
     
     screen = pygame.display.set_mode((int(largeur_fenetre*0.9),int(hauteur_fenetre *0.9)), pygame.RESIZABLE)
-    
-    
-    background_image = pygame.image.load("images/water32.jpg")
-    
-
-    #responsive
-    # Chargement de la police de caractères
-    # police = pygame.font.Font(None, cells_Size)
-        # Chargement de la police de caractères
-    police = pygame.font.Font(game_font, 20)
+        
 
      # Création de la carte. Elle prend en parametre:(la taille de la carte, le dictionnaire du type de case par défaut)
 
@@ -109,9 +97,6 @@ def Main ():
     NewVehicules = [vehicule1,vehicule2,vehicule3,vehicule4]
     
     
-    
-    
-    
     #load les images fixes
     
     vehiculesMenu = [LittleBoat(map,{"x":18,"y":25},"left",1,color = (255,0,0)),
@@ -124,17 +109,9 @@ def Main ():
     
     getImages(vehiculesMenu,cells_Size,[],[])
     images = [vehicule.image for vehicule in vehiculesMenu]
-    stoneImage1 = pygame.image.load("images/little-stone1.png").convert_alpha()
-    stoneImage2 = pygame.image.load("images/big-stone.png").convert_alpha()
-    stoneImage3 = pygame.image.load("images/medium-stone.png").convert_alpha()
     element_image = pygame.image.load("images/cross2.png").convert_alpha()
     gold = pygame.image.load("images/gold1.png").convert_alpha()
-    menu2 = pygame.image.load("images/small_scroll3.png").convert_alpha()
-    space = pygame.image.load("images/space_bar1.png").convert_alpha()
-    canon = pygame.image.load("images/canon1.png").convert_alpha()
-    castleP1 = pygame.image.load("images/Castle_grey22.png").convert_alpha()
-    redFlag = pygame.image.load("images/red_flag1.png").convert_alpha()
-    yellowFlag = pygame.image.load("images/yellow_flag1.png").convert_alpha()
+
     
     
     
@@ -142,7 +119,7 @@ def Main ():
     # Ajout des bateaux jouables à la carte
     for vehicule in NewVehicules:
         map.addElement(vehicule)
-    
+    # ajout des obstacles
     map.randGenerate()
     
 
@@ -175,13 +152,21 @@ def Main ():
     distanceImage = 0
     winner = 0
     
+    
     # ---------------------------------------------------------------Boucle principale du jeu--------------------------------------------------------------------
     while not close:
         #responsive
-        #largeur_fenetre = screen.get_width()
-        #hauteur_fenetre = screen.get_height()*0.95        
-        #cells_Size = largeur_fenetre//mapSize
-        #police = pygame.font.Font(None, cells_Size)
+        largeur_fenetre = screen.get_width()
+        hauteur_fenetre = screen.get_height()      
+        cells_Size = largeur_fenetre/mapSize
+        background_image = pygame.image.load("images/water32.jpg")
+        background_image = pygame.transform.scale(background_image, (int(largeur_fenetre),int(hauteur_fenetre)))
+
+        police = pygame.font.Font(game_font, int(cells_Size*(20/17)))
+        getImages(vehiculesMenu,cells_Size,[],[])
+        images = [vehicule.image for vehicule in vehiculesMenu]
+        
+        
         loadImages = True
         
         
@@ -195,6 +180,25 @@ def Main ():
             # Si l'utilisateur quitte le jeu
             if evenement.type == pygame.QUIT:
                 close = True
+            
+            elif evenement.type == pygame.VIDEORESIZE:
+            # Récupération des nouvelles dimensions de la fenêtre
+                width, height = evenement.size
+            # Calcul du ratio largeur/longueur de la fenêtre redimensionnée
+                new_ratio = width / height
+
+                if round(new_ratio, 1) > round(ratio, 1) :
+                    print("ratio",round(ratio, 2),"new_ratio",round(new_ratio, 2),"width",width,"height",height)
+                    # La fenêtre est plus large, on ajuste la largeur
+                    new_width = int(height * ratio)
+                    window = pygame.display.set_mode((new_width, height), pygame.RESIZABLE)
+                elif round(new_ratio, 1) < round(ratio, 1):
+                    print("ratio",round(ratio, 1),"new_ratio",round(new_ratio, 1),"width",width,"height",height)
+                    # La fenêtre est plus haute, on ajuste la hauteur
+                    new_height = int(width / ratio)
+                    window = pygame.display.set_mode((width, new_height), pygame.RESIZABLE)
+            
+            
             if distanceImage == 0:
                 # Capte les touches enfoncées pour définir les actions à effectuer
                 
@@ -259,51 +263,45 @@ def Main ():
 
         def show_popup_menu():
             # Define the colors
-            BROWN = (128, 85, 11)
             BEIGE = (252,202,116)
-            BEIGE1 = (255,190,77)
-            WHITE = (255, 255, 255)
             BLACK = (58, 41, 11)
             RED = (255, 152, 62)
 
-            # Create a surface for the menu rectangle
-            # menu_surface = pygame.Surface((400, 200))
-            # menu_surface.fill(BROWN)
-            # menu_rect = menu_surface.get_rect(center=(largeur_fenetre // 2, hauteur_fenetre // 2))
-            # screen.blit(menu, (largeur_fenetre // 2, hauteur_fenetre // 2))
-            # screen.blit(menu, (100, 60))
-            # screen.blit(menu1, (100, 60))
-            screen.blit(menu2, (140, 20))
 
-            # Create a font object for the text and button
-            font = pygame.font.Font(None, 24)
+            menu2 = pygame.image.load("images/small_scroll3.png").convert_alpha()
+            menu2 = pygame.transform.scale(menu2, (int(cells_Size*(1250/17)), int(cells_Size*(850/17))))
+            
+            decallageX = 80
+            decallageY = 50
+            screen.blit(menu2, (int(cells_Size*((220)/17)), int(cells_Size*(30/17))))
 
             # Create a text surface and get its rect
-            police_goal = pygame.font.Font(game_font, 30)
+            police_goal = pygame.font.Font(game_font, int(cells_Size*(30/17)))
             text1 = "GOAL"
             text = "Destroy the ennemy's base or sink all their ships"
             text_surface1 = police_goal.render(text1, True, RED)
             text_surface = police.render(text, True, BLACK)
-            text_rect1 = text_surface1.get_rect(center=(largeur_fenetre // 2, 190))
-            text_rect = text_surface.get_rect(center=(largeur_fenetre // 2, 220))
+            text_rect1 = text_surface1.get_rect(center=(int(cells_Size*((770 + decallageX)/17)), int(cells_Size*((190 + decallageY)/17))))
+            text_rect = text_surface.get_rect(center=(int(cells_Size*((770 + decallageX)/17)), int(cells_Size*((220 + decallageY)/17))))
 
             frame_color = (58, 41, 11) 
-            frame_position = (300, 250)  # Top-left corner of the frame
-            frame_size = (940, 310)  # Width and height of the frame
-            frame_thickness = 3  # Thickness of the frame border
-
+            frame_position = (int(cells_Size*((300 + decallageX)/17)), int(cells_Size*((250 + decallageY)/17)))  # Top-left corner of the frame
+            frame_size = (int(cells_Size*((940 )/17)), int(cells_Size*(310/17)))  # Width and height of the frame
+            frame_thickness = int(3*cells_Size/14)  # Thickness of the frame border
+            if frame_thickness == 0 :
+                frame_thickness = 1
             # Draw the frame
             pygame.draw.rect(screen, frame_color, (*frame_position, *frame_size), frame_thickness)
 
 
             # Create a button surface and get its rect
-            button_width, button_height = 120, 40
+            button_width, button_height = int(cells_Size*(120/17)), int(cells_Size*(40/17))
             button_surface = pygame.Surface((button_width, button_height))
-            # button_surface.fill(WHITE)
-            button_rect = button_surface.get_rect(center=(largeur_fenetre // 2, hauteur_fenetre // 2 + 210))
+
+            button_rect = button_surface.get_rect(center=(int(cells_Size*((770 + decallageX)/17)), int(cells_Size*((600 + decallageY)/17))))
             
             #Display ships and their characteristics
-            police_ship = pygame.font.Font(game_font, 16)
+            police_ship = pygame.font.Font(game_font, int(cells_Size*16.5/17))
 
             text_ship1 = "Corvette : moves twice as far as other ships"
             text_ship2 = "Medical boat : heals one of your ships"
@@ -317,23 +315,23 @@ def Main ():
             text_ship_surface4 = police_ship.render(text_ship4 , True, BLACK)
             text_ship_surface5 = police_ship.render(text_ship5 , True, RED)
         
-            text_rect_ship_surface1 = text_ship_surface1.get_rect(center=(730,290))
-            text_rect_ship_surface2 = text_ship_surface2.get_rect(center=(730,340))
-            text_rect_ship_surface3 = text_ship_surface3.get_rect(center=(810,395))
-            text_rect_ship_surface4 = text_ship_surface4.get_rect(center=(870,460))
-            text_rect_ship_surface5 = text_ship_surface5.get_rect(center=(810,525))
+            text_rect_ship_surface1 = text_ship_surface1.get_rect(center=(int(cells_Size*((730 + decallageX)/17)),int(cells_Size*((290 + decallageY)/17))))
+            text_rect_ship_surface2 = text_ship_surface2.get_rect(center=(int(cells_Size*((730 + decallageX)/17)),int(cells_Size*((340 + decallageY)/17))))
+            text_rect_ship_surface3 = text_ship_surface3.get_rect(center=(int(cells_Size*((810 + decallageX)/17)),int(cells_Size*((395 + decallageY)/17))))
+            text_rect_ship_surface4 = text_ship_surface4.get_rect(center=(int(cells_Size*((870 + decallageX)/17)),int(cells_Size*((460 + decallageY)/17))))
+            text_rect_ship_surface5 = text_ship_surface5.get_rect(center=(int(cells_Size*((810 + decallageX)/17)),int(cells_Size*((525 + decallageY)/17))))
 
             # Money explanation
 
-            menu_surface = pygame.Surface((190, 100))
+            menu_surface = pygame.Surface((int(cells_Size*(190/17)), int(cells_Size*(100/17))))
             menu_surface.fill(BEIGE)
-            menu_rect = menu_surface.get_rect(center=(1140,305))
+            menu_rect = menu_surface.get_rect(center=(int(cells_Size*((1140 + decallageX)/17)),int(cells_Size*((305 + decallageY)/17))))
             money_text = "For +100"
             canon_text = "Revive +1"
             money_text_surface = police_ship.render(money_text, True, BLACK )
             canon_text_surface = police_ship.render(canon_text, True, BLACK)
-            money_text_rect = money_text_surface.get_rect(center=(1120,280))
-            canon_text_rect = canon_text_surface.get_rect(center=(1120,322))
+            money_text_rect = money_text_surface.get_rect(center=(int(cells_Size*((1120 + decallageX)/17)),int(cells_Size*((280 + decallageY)/17))))
+            canon_text_rect = canon_text_surface.get_rect(center=(int(cells_Size*((1120 + decallageX)/17)),int(cells_Size*((322 + decallageY)/17))))
 
             # Create a text surface for the button and get its rect
             button_text = "Press  Spacebar to Play"
@@ -345,23 +343,26 @@ def Main ():
             
             screen.blit(text_surface, text_rect)
             screen.blit(text_surface1, text_rect1)
-            # screen.blit(button_surface, button_rect)
             screen.blit(button_text_surface, button_text_rect)
-            screen.blit(space, ((largeur_fenetre // 2)-90, hauteur_fenetre // 2 + 190))
-            screen.blit(images[0], (320,270))
-            screen.blit(images[1], (320,330))
-            screen.blit(images[2], (320,380))
-            screen.blit(images[3], (320,440))
-            screen.blit(images[4], (320,510))
-            screen.blit(images[5], (460,448))
+            space = pygame.image.load("images/space_bar1.png").convert_alpha()
+            space = pygame.transform.scale(space, (int(cells_Size*(170/17)), int(cells_Size*(40/17))))
+            screen.blit(space, (int(cells_Size*((673 + decallageX)/17)), int(cells_Size*((585 + decallageY)/17))))
+            screen.blit(images[0], (int(cells_Size*((310 + decallageX)/17)),int(cells_Size*((270 + decallageY)/17))))
+            screen.blit(images[1], (int(cells_Size*((310 + decallageX)/17)),int(cells_Size*((330 + decallageY)/17))))
+            screen.blit(images[2], (int(cells_Size*((310 + decallageX)/17)),int(cells_Size*((380 + decallageY)/17))))
+            screen.blit(images[3], (int(cells_Size*((310 + decallageX)/17)),int(cells_Size*((440 + decallageY)/17))))
+            screen.blit(images[4], (int(cells_Size*((310 + decallageX)/17)),int(cells_Size*((510 + decallageY)/17))))
+            screen.blit(images[5], (int(cells_Size*((455 + decallageX)/17)),int(cells_Size*((448 + decallageY)/17))))
             screen.blit(text_ship_surface1, text_rect_ship_surface1)
             screen.blit(text_ship_surface2, text_rect_ship_surface2)
             screen.blit(text_ship_surface3, text_rect_ship_surface3)
             screen.blit(text_ship_surface4, text_rect_ship_surface4)
             screen.blit(text_ship_surface5, text_rect_ship_surface5)
             screen.blit(menu_surface, menu_rect)
-            screen.blit(gold, (1190,270))
-            screen.blit(canon, (1190,310))
+            screen.blit(gold, (int(cells_Size*((1190 + decallageX)/17)),int(cells_Size*((270 + decallageY)/17))))
+            canon = pygame.image.load("images/canon1.png").convert_alpha()
+            canon = pygame.transform.scale(canon, (int(cells_Size*(35/17)), int(cells_Size*(27/17))))
+            screen.blit(canon, (int(cells_Size*((1190 + decallageX)/17)),int(cells_Size*((310 + decallageY)/17))))
             screen.blit(money_text_surface, money_text_rect)
             screen.blit(canon_text_surface, canon_text_rect)
             
@@ -415,9 +416,6 @@ def Main ():
             distanceImage = cells_Size * vehicule.speed
             print(getAngle(vehicule.direction))
             
-            
-             
-            
                 
             MAJImage = True
             # Réinitialisation des variables de déplacement
@@ -437,24 +435,27 @@ def Main ():
             vehicule.image = pygame.transform.rotate(vehicule.image, vehicule.imageAngle - getAngle(vehicule.direction))  
             vehicule.imageAngle  = getAngle(vehicule.direction)
             if vehicule.direction == "up":
-                vehicule.imagePosition = (vehicule.Front["x"]*cells_Size  ,vehicule.Front["y"]*cells_Size + distanceImage)
+                vehicule.imagePosition = (int(vehicule.Front["x"]*cells_Size ) ,int(vehicule.Front["y"]*cells_Size + distanceImage))
                 
             elif vehicule.direction == "right":
-                vehicule.imagePosition = (vehicule.Back["x"]*cells_Size - distanceImage ,(vehicule.Back["y"]-(vehicule.size["x"]-1))*cells_Size )
+                vehicule.imagePosition = (int(vehicule.Back["x"]*cells_Size - distanceImage) ,(int(vehicule.Back["y"]-(vehicule.size["x"]-1))*cells_Size ))
 
             elif vehicule.direction == "down":
-                vehicule.imagePosition = (vehicule.Back["x"]*cells_Size  ,vehicule.Back["y"]*cells_Size - distanceImage )
+                vehicule.imagePosition = (int(vehicule.Back["x"]*cells_Size)  ,int(vehicule.Back["y"]*cells_Size - distanceImage ))
 
             elif vehicule.direction == "left":
-                vehicule.imagePosition = (vehicule.Front["x"]*cells_Size  + distanceImage ,(vehicule.Front["y"]-(vehicule.size["x"]-1))*cells_Size)
+                vehicule.imagePosition = (int(vehicule.Front["x"]*cells_Size  + distanceImage) ,int((vehicule.Front["y"]-(vehicule.size["x"]-1))*cells_Size))
             
             MAJImage = False
         
-        if distanceImage > 0 :
+        if distanceImage > cells_Size*0.5 :
             distanceImage -= 1 *cells_Size*0.5
             MAJImage = True
-        elif distanceImage < 0 :
+        elif distanceImage < -cells_Size*0.5 :
             distanceImage += 1 *cells_Size*0.5
+            MAJImage = True
+        elif distanceImage != 0:
+            distanceImage = 0
             MAJImage = True
             
 
@@ -471,6 +472,7 @@ def Main ():
         # font = pygame.font.Font(None, 36)
         score1 = 0
         score2 = 0
+        
 
         for y in range(len(matrice)):
             for x in range(len(matrice[y])):
@@ -483,12 +485,16 @@ def Main ():
         score_text_1 = police.render(f"P1: {score1}", True, (255, 255, 255)) #score équipe 1
         score_text_2 = police.render(f"P2: {score2}", True, (255, 255, 255)) #score équipe 2
 
-        # text_width1 = score_text_1.get_width()
-        screen.blit(score_text_1, (10, 20))
-        screen.blit(gold, (50, 20))
+        gold = pygame.image.load("images/gold.png")
+        gold = pygame.transform.scale(gold, (int(cells_Size*(25/17)), int(cells_Size*(25/17))))
+        
+        
+        screen.blit(score_text_1, (int(cells_Size*(10/17)), int(cells_Size*(20/17))))
+        screen.blit(gold, (int(cells_Size*(45/17)), int(cells_Size*(20/17))))
+        
         text_width = score_text_2.get_width()
-        screen.blit(score_text_2, (largeur_fenetre - text_width - 20, 20))
-        screen.blit(gold, (largeur_fenetre - text_width+18, 20))
+        screen.blit(score_text_2, (largeur_fenetre - text_width - int(cells_Size*(20/17)), int(cells_Size*(20/17))))
+        screen.blit(gold, (largeur_fenetre - text_width + int(cells_Size*(16/17)), int(cells_Size*(20/17))))
 
         menu_text = police.render(f"Press M for Menu", True, (255, 255, 255)) #score équipe 2
         text_width_menu = menu_text.get_width()
@@ -496,25 +502,23 @@ def Main ():
         #--------------------------------------- Fin Affichage des scores de chaque coté de la page : ---------------------------------------
         
         
-        
-        
         # Mise en mouvement des bullets
         map.reloadBullets()
         
+        
+        policeMap = pygame.font.Font(None, int(cells_Size))
         # Affichage de la matrice de caractères  de la map dans la fenêtre
         for y in range(len(matrice)):
             for x in range(len(matrice[y])):
                 
                 # Affichage du caractère de la case
+                caractere = ""
                 caractere = matrice[y][x]["char"]
                 
                 # Affichage de la couleur de la case
                 if "color"  in matrice[y][x]:
                     color = matrice[y][x]["color"]
                 else: color = (255,255,255)
-                
-                
-                #caractere =" "
                 
                 # Affichage des bullets de la map
                 for bullet in map.bullets:
@@ -523,13 +527,13 @@ def Main ():
                         
                 # Impression du caractère dans la fenêtre aux coordonnées x et y
                 if caractere != "":
-                    texte = police.render(caractere, True, color)
-                    screen.blit(texte, (x * cells_Size, y * cells_Size))
+                    texte = policeMap.render(caractere, True, color)
+                    screen.blit(texte, (int(x * cells_Size), int(y * cells_Size)))
 
         # Impression des images des bateaux dans la fenêtre
         for element in map.elements:
             # Vérification que le bateau est en vie
-            if hasattr(element,'life') and element.life > 0:
+            if hasattr(element,'image'):
                 # Affichage de l'image du bateau, i correspond à l'index de l'équipe et j à l'index du bateau
                 screen.blit(element.image, element.imagePosition)
                 
@@ -538,17 +542,9 @@ def Main ():
         for y in range(len(matrice)):
             for x in range(len(matrice[y])):    
                 if matrice[y][x]["char"] == "X":
-            # Darken the slot by drawing a semi-transparent black rectangle
-                    screen.blit(darkened_image, ((x-0.25) * cells_Size, (y-0.25) * cells_Size))
+                # Darken the slot by drawing a semi-transparent black rectangle
+                    screen.blit(darkened_image, (int((x-0.20) * cells_Size), int((y-0.10) * cells_Size)))
         
-        
-            screen.blit(castleP1, (largeur_fenetre-120, hauteur_fenetre// 2))
-            screen.blit(castleP1, (0, hauteur_fenetre// 2))
-            screen.blit(redFlag, (largeur_fenetre-120, (hauteur_fenetre// 2)-45))
-            screen.blit(yellowFlag, (5, (hauteur_fenetre// 2)-35))
-        
-                            
-
                 
 
         # Si tous les bateaux de l'équipe sont morts, on affiche un message
@@ -565,12 +561,6 @@ def Main ():
                     break
 
                 
-                
-                
-            
-                
-                
-
         if show_popup:
             show_popup_menu()       
           

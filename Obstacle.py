@@ -8,8 +8,10 @@ class Obstacle(Element):
     def __init__(self, map_instance ,matrice :List[List[Dict[str, str]]]= None):
         self.type = {"char":"O"} # or self.type={"Obstacle"}    
         self.direction = random.choice(["up", "down", "right", "left"])
+        self.imageLoc = random.choice(["little-stone1.png","big-stone.png","medium-stone.png"])
         # On génère aléatoirement la position, la taille et la direction de l'obstacle
-        self.size = {"x":random.randint(1, 10),"y":random.randint(1, 10)}
+        
+        self.size = {"x":random.randint(3, 8),"y":random.randint(3, 8)}
         self.position={"x":random.randint(0, map_instance.size["x"]-self.size["x"]),"y":random.randint(0, map_instance.size["y"]-self.size["y"])}
         print(self.position)
         self.Front = self.position 

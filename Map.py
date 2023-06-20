@@ -172,8 +172,8 @@ class Map:
     #Génération aléatoire de la map
     def randGenerate(self):
         # Création des bases 
-        base1 = Base(self,"up","player1", (255, 0, 0))
-        base2 = Base(self,"up","player2",(0,255,0))
+        base1 = Base(self,"up",1, (255, 0, 0))
+        base2 = Base(self,"up",2,(0,255,0))
         # Ajout des bases à la carte
         self.addElement(base1)
         self.addElement(base2)
