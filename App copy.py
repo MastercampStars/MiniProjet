@@ -98,15 +98,28 @@ def Main ():
     
     # Création des bateaux. Ils prennent en parametre:({le dictionnaire du type de case}, la carte, {la position du Front du bateau}, la direction du bateau, {la taille du bateau})
     vehicule1 = Carrier(map,{"x":18,"y":25},"left",1,color = (255,0,0))
-    vehicule2 = BigBoat(map,{"x":30,"y":25},"up",2,color = (255,0,0))
+    vehicule2 = BigBoat(map,{"x":30,"y":25},"up",1,color = (255,0,0))
     
-    vehicule3 = MedicaleBoat(map,{"x":18,"y":40},"right",2)
+    vehicule3 = MedicaleBoat(map,{"x":18,"y":40},"right",1)
     vehicule4 = Submarine(map,{"x":40,"y":25},"down",1)
+
+    vehicule5 = Jet(map,{"x":25,"y":25},"left",1)
+    vehicule6 = LittleBoat(map,{"x":35,"y":35},"left",1)
+
+    vehicule11 = Carrier(map,{"x":58,"y":25},"left",2,color = (255,0,0))
+    vehicule21 = BigBoat(map,{"x":90,"y":25},"up",2,color = (255,0,0))
+    
+    vehicule31 = MedicaleBoat(map,{"x":58,"y":40},"right",2)
+    vehicule41 = Submarine(map,{"x":80,"y":25},"down",2)
+
+    vehicule51 = Jet(map,{"x":75,"y":25},"left",2)
+    vehicule61 = LittleBoat(map,{"x":85,"y":35},"left",2)
+
 
 
     
     # Création de la liste des bateaux jouables
-    NewVehicules = [vehicule1,vehicule2,vehicule3,vehicule4]
+    NewVehicules = [vehicule1,vehicule2,vehicule3,vehicule4,vehicule5,vehicule6,vehicule11,vehicule21,vehicule31,vehicule41,vehicule51,vehicule61]
     
     
     
@@ -128,6 +141,7 @@ def Main ():
     stoneImage2 = pygame.image.load("images/big-stone.png").convert_alpha()
     stoneImage3 = pygame.image.load("images/medium-stone.png").convert_alpha()
     element_image = pygame.image.load("images/cross2.png").convert_alpha()
+    obstacle_boom = pygame.image.load("images/cross2_obstacle.png").convert_alpha()
     gold = pygame.image.load("images/gold1.png").convert_alpha()
     menu2 = pygame.image.load("images/small_scroll3.png").convert_alpha()
     space = pygame.image.load("images/space_bar1.png").convert_alpha()
@@ -217,6 +231,16 @@ def Main ():
                             vehicule.maxSpeed -= 1
                         elif evenement.key == pygame.K_SPACE:
                             fire = True
+                        elif evenement.key == pygame.K_k:
+                            if place_1 :
+                                place_1 = False
+                            else :
+                                place_1 = True
+                        elif evenement.key == pygame.K_j:
+                            if place_2 :
+                                place_2 = False
+                            else :
+                                place_2 = True
                         elif evenement.key == pygame.K_KP_ENTER or evenement.key == pygame.K_RETURN:
                             print("special")
                             if hasattr (vehicule,'special') :
@@ -403,7 +427,7 @@ def Main ():
             #--------------------------------------------------Open popup Place ships p1----------------------------------------------------------------------------
         def place_ships_P1() :
 
-            transparent_black = (0, 0, 0, 238)  # Semi-transparent black
+            transparent_black = (0, 0, 0, 228)  # Semi-transparent black
 
             text = police.render("Pick a ship and place it", True, (255, 255, 255))
             text1 = police.render("Press g to validate", True, (255, 255, 255))
@@ -434,7 +458,7 @@ def Main ():
 
         def place_ships_P2() :
 
-            transparent_black = (0, 0, 0, 238)  # Semi-transparent black
+            transparent_black = (0, 0, 0, 228)  # Semi-transparent black
 
             text = police.render("Pick a ship and place it", True, (255, 255, 255))
             text1 = police.render("Press g to validate", True, (255, 255, 255))
@@ -543,14 +567,50 @@ def Main ():
         # font = pygame.font.Font(None, 36)
         score1 = 0
         score2 = 0
+        dead = 0
 
         for y in range(len(matrice)):
             for x in range(len(matrice[y])):
                 if "player" in matrice[y][x]:
                     if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==1:
-                        score2 = score2 + 1
+                        score2 = score2 + 10
+                        if "self" in matrice[y][x] and hasattr(matrice[y][x]["self"],'life') and matrice[y][x]["self"].life == 0:
+                            dead = 2
+                            # score2 = score2 + 100
+                            # print("score2:", score2)
+                            # break
+
                     if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==2:
-                        score1 = score1 + 1
+                        score1 = score1 + 10
+                        if "self" in matrice[y][x] and hasattr(matrice[y][x]["self"],'life') and matrice[y][x]["self"].life == 0:
+                            dead = 1
+                        #     break
+                        # break
+        
+        if dead == 1:
+            # print("score1 before:", score1)
+            score1 = score1 + 100
+            # print("score1:", score1)
+        
+
+        if dead == 2:
+            # print("score2 before:", score1)
+            score2 = score2 + 100
+            # print("score2:", score2)
+
+        if score1>=100:
+            for vehicule in vehicules:
+                vehicule.revive_tourelle()
+            score1 = score1 - 100
+            
+            # print("score1-100:", score1)
+
+        if score2>=100:
+            for vehicule in vehicules:
+                vehicule.revive_tourelle()
+            score2 = score2 - 100
+            
+            # print("score2-100:", score2)
                     
         score_text_1 = police.render(f"P1: {score1}", True, (255, 255, 255)) #score équipe 1
         score_text_2 = police.render(f"P2: {score2}", True, (255, 255, 255)) #score équipe 2
@@ -599,7 +659,7 @@ def Main ():
                 # Impression du caractère dans la fenêtre aux coordonnées x et y
                 if caractere != "":
                     texte = police.render(caractere, True, color)
-                    # screen.blit(texte, (x * cells_Size, y * cells_Size))
+                    screen.blit(texte, (x * cells_Size, y * cells_Size))
 
         # Mise a jour filtre bateau selectionné 
 
@@ -620,13 +680,15 @@ def Main ():
                 screen.blit(element.image, element.imagePosition)
                 
         darkened_image = element_image.copy()
+        # obstacle = obstacle_boom.copy()
              
         for y in range(len(matrice)):
             for x in range(len(matrice[y])):    
                 if matrice[y][x]["char"] == "X":
             # Darken the slot by drawing a semi-transparent black rectangle
                     screen.blit(darkened_image, ((x-0.25) * cells_Size, (y-0.25) * cells_Size))
-        
+                # if matrice[y][x]["char"] == "O":
+                #     screen.blit(obstacle, ((x-0.25) * cells_Size, (y-0.25) * cells_Size))
         
             screen.blit(castleP1, (largeur_fenetre-120, hauteur_fenetre// 2))
             screen.blit(castleP1, (0, hauteur_fenetre// 2))

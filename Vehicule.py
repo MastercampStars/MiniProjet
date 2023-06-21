@@ -22,10 +22,18 @@ class Vehicule(Element):
         self.Back = {}
         self.reloadBack()  
         self.life = size["x"]*size["y"]
+        self.type["self"] = self
         
         # On calcule la matrice du bateau à sa création
         self.matrice = self.getMatrice()
         
+    def revive_tourelle(self):
+        for tourelle in self.tourelles:
+            if self.matrice[tourelle["y"]][tourelle["x"]]["char"] == "X":
+                print("found",self.matrice[tourelle["y"]][tourelle["x"]])
+                self.matrice[tourelle["y"]][tourelle["x"]]["char"] = "T"
+                return True
+            return False
 
 
     # Calcule la direction du bateau a partir de ses coordonnées Front et Back
