@@ -86,8 +86,8 @@ def Main (): # -------------------------------------------Initialisation du Main
     stoneImage3 = pygame.image.load("images/medium-stone.png").convert_alpha()
     element_image = pygame.image.load("images/cross2.png").convert_alpha()
     gold = pygame.image.load("images/gold1.png").convert_alpha()
-    menu = pygame.image.load("images/small_scroll.png").convert_alpha()
-    menu1 = pygame.image.load("images/Big_scroll1.png").convert_alpha()
+    # menu = pygame.image.load("images/small_scroll.png").convert_alpha()
+    # menu1 = pygame.image.load("images/Big_scroll1.png").convert_alpha()
     menu2 = pygame.image.load("images/small_scroll3.png").convert_alpha()
     space = pygame.image.load("images/space_bar1.png").convert_alpha()
     canon = pygame.image.load("images/canon1.png").convert_alpha()
@@ -368,13 +368,17 @@ def Main (): # -------------------------------------------Initialisation du Main
 
         def show_game_over_menu(winner) :
             RED = (255,0,0)
-            transparent_black = (0, 0, 0, 228)  # Semi-transparent black
+            transparent_black = (0, 0, 0, 200)
+            transparent_white = (255, 255, 255, 1)  # Semi-transparent black
             police_end = pygame.font.Font(game_font, 50)
+            police_last = pygame.font.Font(game_font, 15)
             # Game Over text
             game_over_text = police_end.render("GAME OVER", True, RED)
 
             # Winner text
             winner_text = police.render(f"Player {winner} wins!", True, (255, 255, 255))
+
+            retry_text = police_last.render(f"press x to exit", True, transparent_white)
 
             # Get the center position of the screen
             screen_center = screen.get_rect().center
@@ -394,6 +398,9 @@ def Main (): # -------------------------------------------Initialisation du Main
             # Draw the winner text below the game over text
             winner_text_rect = winner_text.get_rect(midtop=(screen_center[0], game_over_text_rect.bottom + 20))
             screen.blit(winner_text, winner_text_rect)
+
+            retry_text_rect = retry_text.get_rect(midtop=(screen_center[0], winner_text_rect.bottom + 250))
+            screen.blit(retry_text, retry_text_rect)
 
         # Déplacement du bateau
         if direction is not None:
@@ -452,7 +459,9 @@ def Main (): # -------------------------------------------Initialisation du Main
 
         for y in range(len(matrice)):
             for x in range(len(matrice[y])):
-                if matrice[y][x]["char"] == "X":
+                if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==1:
+                    score2 = score2 + 1
+                if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==2:
                     score1 = score1 + 1
                     
         score_text_1 = police.render(f"P1: {score1}", True, (255, 255, 255)) #score équipe 1
@@ -489,7 +498,7 @@ def Main (): # -------------------------------------------Initialisation du Main
                     if bullet.position["x"] == x and bullet.position["y"] == y:
                         caractere = "o"
                         
-                # # Impression du caractère dans la fenêtre aux coordonnées x et y
+                # Impression du caractère dans la fenêtre aux coordonnées x et y
                 texte = police.render(caractere, True, color)
                 # screen.blit(texte, (x * cells_Size, y * cells_Size))
                 
@@ -529,16 +538,15 @@ def Main (): # -------------------------------------------Initialisation du Main
 
             # Si tous les bateaux de l'équipe sont morts, on affiche un message
             if inlife_boats == 0:
+                game_over=True
                 print("Team ", i+1, " is dead")
                 close = True
                 break
                 
         if show_popup:
-            # print("lord")
             show_popup_menu()       
           
         if game_over:
-            # print("lord")
             show_game_over_menu(1)     
         # Mise à jour de la fenêtre  
         pygame.display.flip()
