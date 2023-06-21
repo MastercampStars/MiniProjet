@@ -134,7 +134,7 @@ def Main ():
     direction = None
     close = False
     fire = False
-    MAJImage = False
+    MAJImage = True
     loadImages = False
     
     # Variable d'affichage
@@ -148,7 +148,6 @@ def Main ():
     vehicules = teamsVehicules[indexTeam]
     vehicule = vehicules[indexVehicule]
 
-    nbPlayers = len(players)
     distanceImage = 0
     winner = 0
     
@@ -352,7 +351,7 @@ def Main ():
             screen.blit(images[2], (int(cells_Size*((310 + decallageX)/17)),int(cells_Size*((380 + decallageY)/17))))
             screen.blit(images[3], (int(cells_Size*((310 + decallageX)/17)),int(cells_Size*((440 + decallageY)/17))))
             screen.blit(images[4], (int(cells_Size*((310 + decallageX)/17)),int(cells_Size*((510 + decallageY)/17))))
-            screen.blit(images[5], (int(cells_Size*((455 + decallageX)/17)),int(cells_Size*((448 + decallageY)/17))))
+            screen.blit(images[5], (int(cells_Size*((460 + decallageX)/17)),int(cells_Size*((448 + decallageY)/17))))
             screen.blit(text_ship_surface1, text_rect_ship_surface1)
             screen.blit(text_ship_surface2, text_rect_ship_surface2)
             screen.blit(text_ship_surface3, text_rect_ship_surface3)
@@ -409,14 +408,10 @@ def Main ():
 
         # Déplacement du vehicule
         if direction is not None:
-            # Faites ici le traitement de déplacement du vehicule en fonction de la direction et de la distance
-            presAngle = getAngle(vehicule.direction)
             vehicule.move(direction) 
             print("Move ", direction) 
             distanceImage = cells_Size * vehicule.speed
             print(getAngle(vehicule.direction))
-            
-                
             MAJImage = True
             # Réinitialisation des variables de déplacement
             direction = None
@@ -513,7 +508,7 @@ def Main ():
                 
                 # Affichage du caractère de la case
                 caractere = ""
-                caractere = matrice[y][x]["char"]
+                #caractere = matrice[y][x]["char"]
                 
                 # Affichage de la couleur de la case
                 if "color"  in matrice[y][x]:
