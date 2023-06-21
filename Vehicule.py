@@ -22,6 +22,7 @@ class Vehicule(Element):
         self.Back = {}
         self.reloadBack()  
         self.life = size["x"]*size["y"]
+        self.type["self"] = self
         
         # On calcule la matrice du bateau à sa création
         self.matrice = self.getMatrice()
@@ -191,6 +192,10 @@ class LittleBoat(Vehicule):
         self.type["color"] = color or (255, 255, 255)
         self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
+        if player == 1 :
+            self.imageLoc = "littleBoat.png"
+        if player == 2 :
+            self.imageLoc = "littleBoat_1.png"
         LittleBoat.instance += 1
         super().__init__(self.type, map, position, direction, self.size, self.speed, self.tourelles)
 
@@ -211,6 +216,10 @@ class MedicaleBoat (Vehicule):
         self.type["color"] = color or (255,255,255)
         self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
+        if player == 1 :
+            self.imageLoc = "medicaleBoat.png"
+        if player == 2 :
+            self.imageLoc = "medicaleBoat_1.png"
         MedicaleBoat.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed)
  
@@ -232,6 +241,10 @@ class BigBoat (Vehicule):
         self.type["color"] = color or (255,255,255)
         self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
+        if player == 1 :
+            self.imageLoc = "bigBoat.png"
+        if player == 2 :
+            self.imageLoc = "bigBoat_1.png"
         BigBoat.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
         
@@ -267,7 +280,12 @@ class Carrier (Vehicule):
         self.type["color"] = color or (255,255,255)
         self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
+        if player == 1 :
+            self.imageLoc = "carrier.png"
+        if player == 2 :
+            self.imageLoc = "carrier_1.png"
         Carrier.instance += 1
+        
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
     
     def special(self):
@@ -289,13 +307,31 @@ class Submarine (Vehicule):
         self.type["color"] = color or (255,255,255)
         self.type["collide"] = self.collide1.copy()
         self.type["id"] = self.type["char"] + str(self.instance)
+        
+        if player == 1  :
+            self.imageLoc = "submarine.png"
+        if player == 2 :
+            self.imageLoc = "submarine_1.png"
         Submarine.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
         self.type["id"] = "S" + str(Submarine.instance)
     
     def special(self):
+        
+        
+        if self.type["player"] == 1  :
+            self.imageLoc = "submarine.png"
+
+        if self.type["player"] == 2 :
+            self.imageLoc = "submarine_1.png"
+
+        
         if(self.type["collide"] == Submarine.collide1):
             self.type["collide"] = Submarine.collide2
+            if self.type["player"] == 1  :
+                self.imageLoc = "submarine_underwater.png"
+            if self.type["player"] == 2 :
+                self.imageLoc = "submarine_1_underwater.png"
             for y in range(self.size["y"]):
                 for x in range(self.size["x"]):
                     self.matrice[y][x]["collide"] = self.type["collide"].copy()
@@ -304,6 +340,10 @@ class Submarine (Vehicule):
         
         elif(self.type["collide"] == Submarine.collide2):
             self.type["collide"] = Submarine.collide1
+            if self.type["player"] == 1  :
+                self.imageLoc = "submarine.png"
+            if self.type["player"] == 2 :
+                self.imageLoc = "submarine_1.png"
             for y in range(self.size["y"]):
                 for x in range(self.size["x"]):
                     self.matrice[y][x]["collide"] = self.type["collide"].copy()
@@ -334,8 +374,8 @@ class Jet( Vehicule):
         self.type["collide"] = self.collide
         self.type["id"] = self.type["char"] + str(self.instance)
         Jet.instance += 1
+        if player == 1 :
+            self.imageLoc = "jet.png"
+        if player == 2 :
+            self.imageLoc = "jet_1.png"
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
-        
-    
-        
-        

@@ -16,6 +16,7 @@ class Obstacle(Element):
         print(self.position)
         self.Front = self.position 
         self.type["collide"] = ["bullet","element","base","obstacle"]
+        self.type["obstacle"] = True
         self.Back = {}
         self.reloadBack()  
         Obstacle.instance += 1

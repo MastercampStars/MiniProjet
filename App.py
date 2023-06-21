@@ -16,7 +16,7 @@ def getAngle(direction):
     if direction == "left":
         return -90
      
-def getImages(elements,cells_Size,players,teamsVehicules): 
+def getImages(elements,cells_Size,players =[],teamsVehicules=[]): 
     
     for element in elements:
         if ("player" in element.type):
@@ -56,8 +56,6 @@ def Main ():
     # Initialisation de Pygame
     pygame.init()
     
-
-
     # Création de la fenêtre plein ecran pour récuperer les bonnes dimentions
     screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
     pygame.display.set_caption("Bataille navale")
@@ -99,10 +97,10 @@ def Main ():
     
     #load les images fixes
     
-    vehiculesMenu = [LittleBoat(map,{"x":18,"y":25},"left",1,color = (255,0,0)),
-                     MedicaleBoat(map,{"x":18,"y":40},"left",2),
-                     BigBoat(map,{"x":30,"y":25},"left",1,color = (255,0,0)),
-                     Carrier(map,{"x":18,"y":25},"left",1,color = (255,0,0)),
+    vehiculesMenu = [LittleBoat(map,{"x":18,"y":25},"left",1),
+                     MedicaleBoat(map,{"x":18,"y":40},"left",1),
+                     BigBoat(map,{"x":30,"y":25},"left",1),
+                     Carrier(map,{"x":18,"y":25},"left",1),
                      Submarine(map,{"x":40,"y":25},"left",1),
                      Jet(map,{"x":40,"y":25},"left",1)
                      ]
@@ -136,6 +134,7 @@ def Main ():
     fire = False
     MAJImage = True
     loadImages = False
+    Image_player = True
     
     # Variable d'affichage
     show_popup = True
@@ -150,6 +149,17 @@ def Main ():
 
     distanceImage = 0
     winner = 0
+    place_1 = False
+    place_2 = False
+    
+    nb_dep_max=5
+    nb_tir_max=3
+    nb_speciale_max=1
+    nb_dep=0
+    nb_tir=0
+    nb_speciale=0
+
+
     
     
     # ---------------------------------------------------------------Boucle principale du jeu--------------------------------------------------------------------
@@ -164,7 +174,8 @@ def Main ():
         police = pygame.font.Font(game_font, int(cells_Size*(20/17)))
         getImages(vehiculesMenu,cells_Size,[],[])
         images = [vehicule.image for vehicule in vehiculesMenu]
-        
+        bullets = pygame.image.load("images/bullet2.png").convert_alpha()
+        obstacle_boom = pygame.image.load("images/cross2_obstacle.png").convert_alpha()
         
         loadImages = True
         
@@ -172,6 +183,17 @@ def Main ():
 
         #chargement de la matrice de la carte
         matrice = map.getMatrice()
+        
+         #Définition des tours
+        dep=False
+        tir = False  
+        speciale=False 
+        if (nb_dep!=nb_dep_max):
+            dep=True
+        if (nb_tir!=nb_tir_max):
+            tir = True
+        if(nb_speciale!=nb_speciale_max):
+            speciale=True
         
         # Gestion des événements claviers et souris
         for evenement in pygame.event.get():
@@ -196,6 +218,8 @@ def Main ():
                     # La fenêtre est plus haute, on ajuste la hauteur
                     new_height = int(width / ratio)
                     window = pygame.display.set_mode((width, new_height), pygame.RESIZABLE)
+            loadImages = True
+            Image_player = True
             
             
             if distanceImage == 0:
@@ -215,18 +239,33 @@ def Main ():
                             vehicule.maxSpeed += 1
                         elif evenement.key == pygame.K_MINUS or evenement.key == pygame.K_KP_MINUS:
                             vehicule.maxSpeed -= 1
-                        elif evenement.key == pygame.K_SPACE:
+                        elif evenement.key == pygame.K_SPACE and tir==True:
                             fire = True
-                        elif evenement.key == pygame.K_KP_ENTER or evenement.key == pygame.K_RETURN:
+                            nb_tir+=1
+                    
+                        elif evenement.key == pygame.K_k:
+                            if place_1 :
+                                place_1 = False
+                            else :
+                                place_1 = True
+                        elif evenement.key == pygame.K_j:
+                            if place_2 :
+                                place_2 = False
+                            else :
+                                place_2 = True
+                                
+                        elif (evenement.key == pygame.K_KP_ENTER or evenement.key == pygame.K_RETURN) :
                             print("special")
-                            if hasattr (vehicule,'special') :
+                            if hasattr (vehicule,'special') and speciale==True:
                                 vehicule.special()
+                                nb_speciale+=1
                             loadImages = True
                             
                         elif evenement.key == pygame.K_TAB:
                             indexVehicule = (indexVehicule+1)%len(vehicules)
                             print(len(vehicules))
                             vehicule = vehicules[indexVehicule]
+                            Image_player = True
                             
                             # Si le bateau est mort : on passe au bateau suivant
                             if vehicule.life == 0 :
@@ -238,11 +277,17 @@ def Main ():
                             vehicules = teamsVehicules[indexTeam]
                             indexVehicule = 0
                             vehicule = vehicules[indexVehicule]
+                            Image_player = True
                             
                             # Si le bateau est mort : on passe au bateau suivant
                             if vehicule.life == 0 :
                                 indexVehicule = (indexVehicule+1)%len(vehicules)
                                 vehicule = vehicules[indexVehicule]
+                                
+                            
+                            nb_dep=0
+                            nb_tir=0
+                            nb_speciale=0
                         
                         elif evenement.key == pygame.K_x:
                             if (map.canExplode(vehicule)):
@@ -364,7 +409,67 @@ def Main ():
             screen.blit(canon, (int(cells_Size*((1190 + decallageX)/17)),int(cells_Size*((310 + decallageY)/17))))
             screen.blit(money_text_surface, money_text_rect)
             screen.blit(canon_text_surface, canon_text_rect)
-            
+        
+        #--------------------------------------------------Open popup Place ships p1----------------------------------------------------------------------------
+        def place_ships_P1() :
+
+            transparent_black = (0, 0, 0, 228)  # Semi-transparent black
+
+            text = police.render("Pick a ship and place it", True, (255, 255, 255))
+            text1 = police.render("Press g to validate", True, (255, 255, 255))
+
+              # Calculate the left half of the screen
+            left_half_rect = pygame.Rect(0, 0, largeur_fenetre // 2, hauteur_fenetre)
+
+            # Create a transparent surface to cover the left half of the screen
+            filter_surface = pygame.Surface(left_half_rect.size, pygame.SRCALPHA)
+            filter_surface.fill(transparent_black)
+
+             # Draw the filtered surface on the left half of the screen
+            screen.blit(filter_surface, left_half_rect.topleft)
+
+            # Draw the text at the middle top of the darkened surface
+            text_rect = text.get_rect(midtop=(left_half_rect.centerx, 100))
+            screen.blit(text, text_rect)
+            screen.blit(images[0], (320,210))
+            screen.blit(images[1], (320,300))
+            screen.blit(images[2], (320,380))
+            screen.blit(images[3], (320,460))
+            screen.blit(images[4], (320,550))
+            text_rect1 = text1.get_rect(midtop=(left_half_rect.centerx, 670))
+            screen.blit(text1, text_rect1)
+
+
+
+
+        def place_ships_P2() :
+
+            transparent_black = (0, 0, 0, 228)  # Semi-transparent black
+
+            text = police.render("Pick a ship and place it", True, (255, 255, 255))
+            text1 = police.render("Press g to validate", True, (255, 255, 255))
+
+              # Calculate the left half of the screen
+            right_half_rect = pygame.Rect(largeur_fenetre // 2, 0, largeur_fenetre // 2, hauteur_fenetre)
+
+            # Create a transparent surface to cover the left half of the screen
+            filter_surface = pygame.Surface(right_half_rect.size, pygame.SRCALPHA)
+            filter_surface.fill(transparent_black)
+
+             # Draw the filtered surface on the left half of the screen
+            screen.blit(filter_surface, right_half_rect.topleft)
+
+            # Draw the text at the middle top of the darkened surface
+            text_rect = text.get_rect(midtop=(right_half_rect.centerx, 100))
+            screen.blit(text, text_rect)
+            screen.blit(images[0], (1120,210))
+            screen.blit(images[1], (1110,300))
+            screen.blit(images[2], (1080,380))
+            screen.blit(images[3], (1100,460))
+            screen.blit(images[4], (1120,550))
+            text_rect1 = text.get_rect(midtop=(right_half_rect.centerx+60, 670))
+            screen.blit(text1, text_rect1)
+   
         #--------------------------------------------------Open popup gameover----------------------------------------------------------------------------
         def show_game_over_menu(winner) :
             RED = (255,0,0)
@@ -401,23 +506,34 @@ def Main ():
 
         #chargement des images
         if loadImages:
-            teamsVehicules,players = getImages(map.elements,cells_Size,players,teamsVehicules)
+
+            if Image_player :
+                teamsVehicules,players = getImages(map.elements,cells_Size,players,teamsVehicules)
+                getImages(map.elements,cells_Size)
+                vehicule_image = vehicule.image.copy()
+                mask_surface = pygame.Surface(vehicule_image.get_size(), pygame.SRCALPHA)
+                mask_surface.fill((255, 255, 255, 228)) 
+                vehicule_image.blit(vehicule_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+                vehicule.image = pygame.transform.rotate(vehicule_image, vehicule.imageAngle - getAngle(vehicule.direction))
+                Image_player = False
             vehicules = teamsVehicules[indexTeam]
             loadImages = False
             
 
         # Déplacement du vehicule
         if direction is not None:
-            vehicule.move(direction) 
-            print("Move ", direction) 
-            distanceImage = cells_Size * vehicule.speed
-            print(getAngle(vehicule.direction))
+            if dep:
+                if vehicule.move(direction) :
+                    nb_dep += 1
+                    print("Move ", direction) 
+                    distanceImage = cells_Size * vehicule.speed
+                    print(getAngle(vehicule.direction))
             MAJImage = True
             # Réinitialisation des variables de déplacement
             direction = None
         
         # Tir du bateau
-        if fire:
+        if fire :
             vehicule.fire()
             print("Fire") 
             print(len(map.bullets))
@@ -521,9 +637,16 @@ def Main ():
                         caractere = "o"
                         
                 # Impression du caractère dans la fenêtre aux coordonnées x et y
+                if caractere == "o":
+                    screen.blit(bullets,(x * cells_Size, y * cells_Size))
+                        
+                # Impression du caractère dans la fenêtre aux coordonnées x et y
                 if caractere != "":
-                    texte = policeMap.render(caractere, True, color)
-                    screen.blit(texte, (int(x * cells_Size), int(y * cells_Size)))
+                    texte = police.render(caractere, True, color)
+                    # screen.blit(texte, (x * cells_Size, y * cells_Size))
+                    
+                    
+                    
 
         # Impression des images des bateaux dans la fenêtre
         for element in map.elements:
@@ -533,12 +656,16 @@ def Main ():
                 screen.blit(element.image, element.imagePosition)
                 
         darkened_image = element_image.copy()
+        obstacle = obstacle_boom.copy()
              
         for y in range(len(matrice)):
             for x in range(len(matrice[y])):    
                 if matrice[y][x]["char"] == "X":
                 # Darken the slot by drawing a semi-transparent black rectangle
                     screen.blit(darkened_image, (int((x-0.20) * cells_Size), int((y-0.10) * cells_Size)))
+                    if "obstacle" in matrice[y][x]:
+                        screen.blit(obstacle, (int((x-0.20) * cells_Size), int((y-0.10) * cells_Size)))
+
         
                 
 
@@ -559,6 +686,13 @@ def Main ():
         if show_popup:
             show_popup_menu()       
           
+          
+        if place_1:
+            place_ships_P1() 
+
+        if place_2:
+            place_ships_P2()     
+                
         if game_over:
             show_game_over_menu(winner) 
         # Mise à jour de la fenêtre  
