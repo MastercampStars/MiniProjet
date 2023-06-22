@@ -6,6 +6,9 @@ class Bullet:
         self.type = type
         self.speed = speed
         self.distance = distance
+        self.imageLoc = "bullet2.png"
+        self.size = {"x":1.2,"y":1.5}
+
         
     
     # On fait avancer la bullet dans sa direction
@@ -19,5 +22,6 @@ class Bullet:
         elif (self.direction == "left"):
             self.position["x"] -= self.speed
         self.distance -= 1
+        self.Front = self.position
     
         

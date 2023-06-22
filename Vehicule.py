@@ -100,6 +100,8 @@ class Vehicule(Element):
             else:
                 self.speed = backSpeed
                 newFront["y"] += self.speed
+            # if self.direction == ""
+                
         
         elif direction == "down" :
             #le bateau avance vers le bas
@@ -120,6 +122,7 @@ class Vehicule(Element):
             else:
                 self.speed = backSpeed
                 newFront["x"] -= self.speed
+            
         
         elif direction == "left" :
             #le bateau avance vers la gauche
@@ -130,6 +133,9 @@ class Vehicule(Element):
             else:
                 self.speed = backSpeed
                 newFront["x"] += self.speed
+                
+            # if self.direction == "up":
+            #     newFront["y"] += self.size["x"] - 1
     
         else:
             print("Direction invalide")   
@@ -183,7 +189,7 @@ class LittleBoat(Vehicule):
     speed = 6
     imageLoc = "littleBoat.png"
     instance = 0
-    tourelles = [{"x":0,"y":0,"direction":"up"},{"x":2,"y":1,"direction":"up"}]
+    tourelles = [{"x":0,"y":0,"direction":"up"},{"x":2,"y":0,"direction":"up"}]
     dynamite = True
 
     def __init__(self, map, position: Dict[int, int], direction: str, player: str, color: tuple = None):
