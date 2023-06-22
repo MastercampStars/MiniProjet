@@ -529,7 +529,7 @@ def Main ():
                 Image_player = True
                 fixe = map.addElement(vehicule)
                 print (fixe)
-                if (map.addElement(vehicule) and fixVehicule):
+                if (fixe and fixVehicule):
                     vehiculeFixed.append(vehicule)
                     fixVehicule = False
                     if teamsVehicules[(indexTeam+1)%len(teamsVehicules)] not in vehiculeFixed:
