@@ -271,6 +271,7 @@ def Main ():
                                     vehicule.special()
                                     nb_speciale+=1
                                 loadImages = True
+                                Image_player = True
                                 
                             elif evenement.key == pygame.K_TAB:
                                 indexVehicule = (indexVehicule+1)%len(vehicules)
@@ -518,11 +519,13 @@ def Main ():
                     if mouse_x > 50 * cells_Size :
                         vehicule.Front["x"] = int(mouse_x//cells_Size)
                         vehicule.Front["y"] = int(mouse_y//cells_Size)
+                        vehicule.direction = direction_placement
  
                 if player == 2:
                     if mouse_x < 50 * cells_Size :
                         vehicule.Front["x"] = int(mouse_x//cells_Size)
                         vehicule.Front["y"] = int(mouse_y//cells_Size)
+                        vehicule.direction = direction_placement
             
                 vehicule.direction = direction_placement
                 getImages(NewVehicules,cells_Size)

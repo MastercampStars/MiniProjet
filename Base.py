@@ -10,7 +10,7 @@ class Base(Element):
         self.type["color"] = color or (255,255,255)
         self.type["collide"] = ["base"]
         self.direction=direction
-        if (player==1):
+        if (player==2):
             self.position={"x":0,"y":int(map_instance.size["y"]*0.5)-self.size["y"]//2}
             self.imageLoc = "Base_Jaune.png"
         else:
