@@ -22,8 +22,6 @@ def Main ():
     hauteur_fenetre = screen.get_height()*0.95
     
     
-    print(largeur_fenetre,hauteur_fenetre)
-    
     # Définition des paramètres de la fenêtre
     mapSize = 100
     ratio = largeur_fenetre/(hauteur_fenetre*0.98)
@@ -108,6 +106,8 @@ def Main ():
     direction_placement = "right"
     vehiculeFixed = []
     fixVehicule = False
+    affichage_vehicule1 = [vehicl.image.copy() for vehicl in teamsVehicules[0] ]
+    affichage_vehicule2 = [vehicl.image.copy() for vehicl in teamsVehicules[1] ]
     
     nb_dep_max=5
     nb_tir_max=3
@@ -145,12 +145,12 @@ def Main ():
         dep=False
         tir = False  
         speciale=False 
-        if (nb_dep!=nb_dep_max):
+        if (nb_dep != nb_dep_max):
             dep=True
-        if (nb_tir!=nb_tir_max):
+        if (nb_tir != nb_tir_max):
             tir = True
-        if(nb_speciale!=nb_speciale_max):
-            speciale=True
+        if(nb_speciale != nb_speciale_max):
+            speciale = True
         
         # Gestion des événements claviers et souris
         for evenement in pygame.event.get():
@@ -177,7 +177,6 @@ def Main ():
                 # Capte les touches enfoncées pour définir les actions à effectuer
                 if evenement.type == pygame.MOUSEBUTTONDOWN :
                     if one_is_placed == False or two_is_placed == False:
-                        print ("clic")
                         if vehicule in vehiculeFixed:
                             vehiculeFixed.remove(vehicule)
                         else:
@@ -217,24 +216,6 @@ def Main ():
                                 vehicule = vehicules[indexVehicule]
                                 Image_player = True
                 
-                                
-                                
-                                
-                                
-                            
-
-
-                            # Vérification si le clic de souris est à l'intérieur du rectangle
-                            # if rectangle.collidepoint(mouse_x, mouse_y):
-                            #     print("Clic sur le rectangle détecté")
-                        
-                        # if one_is_placed == False:
-                            
-                            
-                            
-                        # elif two_is_placed == False:
-                            
-                        #     two_is_placed = True
                             
                         else:
                         
@@ -314,10 +295,7 @@ def Main ():
                                 
  
 
-     
-
-
-
+    
         
         
             #------------------------------------------------------------Début affichage jeu------------------------------------------------------------
@@ -412,7 +390,6 @@ def Main ():
 
 
         
-        
         screen.blit(score_text_1, (int(cells_Size*(10/17)), int(cells_Size*(20/17))))
         screen.blit(gold, (int(cells_Size*(45/17)), int(cells_Size*(20/17))))
         
@@ -463,8 +440,7 @@ def Main ():
 
         # Impression des images des bateaux dans la fenêtre
         for element in map.elements:
-            # if isinstance(element, Vehicule):
-            #     print (element)
+
             # Vérification que le bateau est en vie
             if hasattr(element,'image'):
                 # Affichage de l'image du bateau, i correspond à l'index de l'équipe et j à l'index du bateau
@@ -531,33 +507,35 @@ def Main ():
                 Image_player = True
                 vehicule.reloadBack()  
                 fixe = map.addElement(vehicule)
-                print (fixe)
                 if (fixe and fixVehicule):
                     vehiculeFixed.append(vehicule)
                     fixVehicule = False
                     if teamsVehicules[(indexTeam+1)%len(teamsVehicules)] not in vehiculeFixed:
                         indexVehicule = (indexVehicule+1)%len(vehicules)
                         vehicule = vehicules[indexVehicule]
-            place_ships_P(player,police,vehicules,largeur_fenetre,hauteur_fenetre,screen) 
+            if (player == 1):
+                newlisteAffichage = [image.copy() for image in affichage_vehicule1]
+            if (player == 2):
+                newlisteAffichage = [image.copy() for image in affichage_vehicule2]
             
+            place_ships_P(player,police,newlisteAffichage,indexVehicule,largeur_fenetre,hauteur_fenetre,screen,cells_Size) 
+                
+                
             MAJImage = True
             
 
                 
         elif game_over:
-            show_game_over_menu(winner) 
+            show_game_over_menu(winner,police,game_font,screen) 
         # Mise à jour de la fenêtre  
         pygame.display.flip()
-        print()
-        
+
         # Limitation des fps pour économiser les ressources de l'ordinateur
         clock.tick(40) 
 
     # Fermeture de Pygame
     pygame.quit()
-#--------------------------------------- Fin de boucle de jeu : ---------------------------------------
-    
-    
+#--------------------------------------- Fin de boucle de jeu : --------------------------------------- 
 def getAngle(direction):
     
     if direction == "up":
@@ -569,7 +547,7 @@ def getAngle(direction):
     if direction == "left":
         return -90
      
-def getImages(elements,cells_Size,players =[],teamsVehicules=[]): 
+def getImages(elements,cells_Size,players =[],teamsVehicules=[], orientation = True): 
     
     for element in elements:
         if ("player" in element.type):
@@ -599,14 +577,13 @@ def getImages(elements,cells_Size,players =[],teamsVehicules=[]):
             elementImage = pygame.image.load("assets/"+element.imageLoc).convert_alpha()
             image = pygame.transform.scale(elementImage, (int((element.size["x"]-0.5) * cells_Size), int((element.size["y"]-0.5)*cells_Size)))
             # Faites pivoter l'image en fonction de l'angle du bateau et ajoutez-la à la liste des images
-            element.image = pygame.transform.rotate(image, - element.imageAngle)
+            if orientation:
+                element.image = pygame.transform.rotate(image, - element.imageAngle)
     
     return teamsVehicules,players
 
 
-
 #---------------------------------------------------------------Affichage du menu--------------------------------------------------------------------
-
 def show_popup_menu(screen,cells_Size,game_font,police,images):
     # Define the colors
     BEIGE = (252,202,116)
@@ -712,31 +689,16 @@ def show_popup_menu(screen,cells_Size,game_font,police,images):
     canon = pygame.transform.scale(canon, (int(cells_Size*(35/17)), int(cells_Size*(27/17))))
     screen.blit(canon, (int(cells_Size*((1190 + decallageX)/17)),int(cells_Size*((310 + decallageY)/17))))
     screen.blit(money_text_surface, money_text_rect)
-    screen.blit(canon_text_surface, canon_text_rect)
-    
-    
+    screen.blit(canon_text_surface, canon_text_rect)   
 #--------------------------------------------------Open popup Place ships p1----------------------------------------------------------------------------
-def place_ships_P(player,police,vehicules,largeur_fenetre,hauteur_fenetre,screen) :
-
+def place_ships_P(player,police,images,index,largeur_fenetre,hauteur_fenetre,screen,cells_Size) :
+    # Create a text surface for the button and get its rect
     transparent_black = (0, 0, 0, 228)  # Semi-transparent black
-    images={}
-    for vehicule in vehicules:
-        if isinstance(vehicule,LittleBoat):
-            images["littleBoat"] = vehicule.image
-        if isinstance(vehicule,MedicaleBoat):
-            images["medicalBoat"] = vehicule.image
-        if isinstance(vehicule,BigBoat):
-            images["bigBoat"] = vehicule.image
-        if isinstance(vehicule,Carrier):
-            images["carrier"] = vehicule.image
-        if isinstance(vehicule,Submarine):
-            images["submarine"] = vehicule.image
             
-
     text = police.render("Pick a ship and place it", True, (255, 255, 255))
     text1 = police.render("Press P to validate", True, (255, 255, 255))
 
-        # Calculate the left half of the screen
+    # Calculate the left half of the screen
     left_half_rect = pygame.Rect(0, 0, largeur_fenetre // 2, hauteur_fenetre)
     right_half_rect = pygame.Rect(largeur_fenetre // 2, 0, largeur_fenetre // 2, hauteur_fenetre)
 
@@ -750,34 +712,40 @@ def place_ships_P(player,police,vehicules,largeur_fenetre,hauteur_fenetre,screen
 
     if player == 1:
         screen.blit(filter_surface, left_half_rect.topleft)
-        text_rect = text.get_rect(midtop=(left_half_rect.centerx, 100))
+        text_rect = text.get_rect(midtop=(left_half_rect.centerx, int(100*cells_Size/17)))
         posX = [320 for i in range(5)]
         
     if player == 2:
         screen.blit(filter_surface, right_half_rect.topleft)
-        text_rect = text.get_rect(midtop=(right_half_rect.centerx, 100))
+        text_rect = text.get_rect(midtop=(right_half_rect.centerx, int(100*cells_Size/17)))
         posX=[1120,1110,1080,1100,1120]
+        posX=[1190 for i in range(5)]
     # Draw the text at the middle top of the darkened surface
     screen.blit(text, text_rect)
-    if "littleBoat" in images:
-        screen.blit(images["littleBoat"], (posX[0],210))
-    if "medicalBoat" in images:
-        screen.blit(images["medicalBoat"], (posX[1],300))
-    if "bigBoat" in images:
-        screen.blit(images["bigBoat"], (posX[2],380))
-    if "carrier" in images:
-        screen.blit(images["carrier"], (posX[3],460))
-    if "submarine" in images:
-        screen.blit(images["submarine"], (posX[4],550))
+    
+    mask_surface = pygame.Surface(images[index].get_size(), pygame.SRCALPHA)
+    mask_surface.fill((255, 255, 255, 128)) 
+    images[index].blit(images[index], (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
+    
+    cpt = 0
+    for image in images:
+        x,y = image.get_size()
+        images[cpt] = pygame.transform.scale(image, (int(x * cells_Size/17), int(y*cells_Size/17)))
+        cpt+=1
+       
+    screen.blit(images[0], (int(posX[0]*cells_Size/17),int(210*cells_Size/17)))
+    screen.blit(images[1], (int(posX[1]*cells_Size/17),int(300*cells_Size/17)))
+    screen.blit(images[2], (int(posX[2]*cells_Size/17),int(380*cells_Size/17)))
+    screen.blit(images[3], (int(posX[3]*cells_Size/17),int(460*cells_Size/17)))
+    screen.blit(images[4], (int(posX[4]*cells_Size/17),int(550*cells_Size/17)))
         
     if player == 1:
-        text_rect1 = text1.get_rect(midtop=(left_half_rect.centerx, 670))
+        text_rect1 = text1.get_rect(midtop=(left_half_rect.centerx, int(670*cells_Size/17)))
     elif player == 2:
-        text_rect1 = text1.get_rect(midtop=(right_half_rect.centerx, 670))  
+        text_rect1 = text1.get_rect(midtop=(right_half_rect.centerx, int(670*cells_Size/17)))  
     screen.blit(text1, text_rect1)
-
 #--------------------------------------------------Open popup gameover----------------------------------------------------------------------------
-def show_game_over_menu(winner) :
+def show_game_over_menu(winner,police,game_font,screen) :
     RED = (255,0,0)
     transparent_black = (0, 0, 0, 198)  # Semi-transparent black
     police_end = pygame.font.Font(game_font, 50)
