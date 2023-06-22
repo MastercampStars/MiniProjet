@@ -519,17 +519,17 @@ def Main ():
                     if mouse_x > 50 * cells_Size :
                         vehicule.Front["x"] = int(mouse_x//cells_Size)
                         vehicule.Front["y"] = int(mouse_y//cells_Size)
-                        vehicule.direction = direction_placement
+                        
  
                 if player == 2:
                     if mouse_x < 50 * cells_Size :
                         vehicule.Front["x"] = int(mouse_x//cells_Size)
                         vehicule.Front["y"] = int(mouse_y//cells_Size)
-                        vehicule.direction = direction_placement
             
                 vehicule.direction = direction_placement
                 getImages(NewVehicules,cells_Size)
                 Image_player = True
+                vehicule.reloadBack()  
                 fixe = map.addElement(vehicule)
                 print (fixe)
                 if (fixe and fixVehicule):
@@ -548,6 +548,7 @@ def Main ():
             show_game_over_menu(winner) 
         # Mise à jour de la fenêtre  
         pygame.display.flip()
+        print()
         
         # Limitation des fps pour économiser les ressources de l'ordinateur
         clock.tick(40) 
