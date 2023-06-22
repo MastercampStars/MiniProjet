@@ -307,17 +307,15 @@ class Submarine (Vehicule):
         self.type["color"] = color or (255,255,255)
         self.type["collide"] = self.collide1.copy()
         self.type["id"] = self.type["char"] + str(self.instance)
-        
         if player == 1  :
             self.imageLoc = "submarine.png"
         if player == 2 :
             self.imageLoc = "submarine_1.png"
         Submarine.instance += 1
         super().__init__(self.type,map,position,direction,self.size,self.speed,self.tourelles)
-        self.type["id"] = "S" + str(Submarine.instance)
+
     
     def special(self):
-        
         
         if self.type["player"] == 1  :
             self.imageLoc = "submarine.png"

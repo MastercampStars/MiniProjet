@@ -43,17 +43,17 @@ def Main ():
     medicaleBoat = MedicaleBoat(map,{"x":18,"y":40},"right",1,color = (255,0,0))
     bigBoat1 = BigBoat(map,{"x":30,"y":25},"right",1,color = (255,0,0))
     carrier1 = Carrier(map,{"x":18,"y":25},"right",1,color = (255,0,0))
-    submarine1 = Submarine(map,{"x":40,"y":25},"right",1,color = (255,0,0))
+    submarine2 = Submarine(map,{"x":40,"y":25},"right",2,color = (255,0,0))
     
     #team2
     littleBoat2 = LittleBoat(map,{"x":18,"y":25},"left",2,color = (0,0,255))
     medicaleBoat2 = MedicaleBoat(map,{"x":18,"y":40},"left",2,color = (0,0,255))
     bigBoat2 = BigBoat(map,{"x":30,"y":25},"left",2,color = (0,0,255))
     carrier2 = Carrier(map,{"x":18,"y":25},"left",2,color = (0,0,255))
-    submarine2 = Submarine(map,{"x":40,"y":25},"left",2,color = (0,0,255))
+    submarine1 = Submarine(map,{"x":40,"y":25},"left",1,color = (0,0,255))
     
     # Création de la liste des bateaux jouables
-    NewVehicules = [submarine1,submarine2,carrier1,carrier2,bigBoat1,bigBoat2,medicaleBoat,medicaleBoat2,littleBoat1,littleBoat2]
+    NewVehicules = [littleBoat1,littleBoat2,medicaleBoat,medicaleBoat2,bigBoat1,bigBoat2,carrier1,carrier2,submarine1,submarine2]
     
     
     #load les images fixes
