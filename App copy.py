@@ -599,15 +599,15 @@ def Main ():
             # print("score2:", score2)
 
         if score1>=100:
-            for vehicule in vehicules:
-                vehicule.revive_tourelle()
+            for vehicule1 in vehicules:
+                vehicule1.revive_tourelle()
             score1 = score1 - 100
             
             # print("score1-100:", score1)
 
         if score2>=100:
-            for vehicule in vehicules:
-                vehicule.revive_tourelle()
+            for vehicule1 in vehicules:
+                vehicule1.revive_tourelle()
             score2 = score2 - 100
             
             # print("score2-100:", score2)
