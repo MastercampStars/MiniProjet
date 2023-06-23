@@ -178,16 +178,17 @@ class Map:
         self.addElement(base1)
         self.addElement(base2)
         
-        # On génère un nombre aléatoire d'obstacle
-        number_Obstacle = random.randint(5, 6)
-        cpt=0
-        while(cpt<number_Obstacle):
-            # On ajoute l'obstacle à la map si il n'y a pas de collision
-            obstacle = Obstacle(self.copy())
-            self.addElement(obstacle) 
-            if (self.addElement(obstacle)):
-                cpt+=1
-
+        # On génère les obstacles à des positions aléatoires, 3 sur la moitié gauche de la map et 3 sur la moitié droite
+        sizes=[{"x":4,"y":4},{"x":8,"y":4},{"x":10,"y":5}]       
+        for size in sizes:
+            obstacle = Obstacle(self.copy(),1,size)
+            while not self.addElement(obstacle):
+                obstacle = Obstacle(self.copy(),1,size)
+        for size in sizes:
+            obstacle = Obstacle(self.copy(),2,size)
+            while not self.addElement(obstacle):
+                obstacle = Obstacle(self.copy(),2,size)
+                
         
     #Vérifie si le bateau est bien entièrement dans la base avant l'explosion
     def canExplode(self, Vehicule):

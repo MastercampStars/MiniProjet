@@ -140,16 +140,15 @@ def Main ():
             background_image = pygame.transform.scale(background_image, (int(largeur_fenetre),int(hauteur_fenetre)))
             gold = pygame.image.load("images/gold.png")
             gold = pygame.transform.scale(gold, (int(cells_Size*(25/17)), int(cells_Size*(25/17))))
-            teamsVehicules,players = getImages(map.elements,cells_Size,players,teamsVehicules)
             getImages(map.elements,cells_Size)
             vehicule_image = vehicule.image.copy()
             mask_surface = pygame.Surface(vehicule_image.get_size(), pygame.SRCALPHA)
             mask_surface.fill((255, 255, 255, 128)) 
             vehicule_image.blit(vehicule_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
             vehicule.image = pygame.transform.rotate(vehicule_image, vehicule.imageAngle - getAngle(vehicule.direction))
-            vehicules = teamsVehicules[indexTeam]
+
             police = pygame.font.Font(game_font, int(cells_Size*(20/17)))
-            images = [vehicule.image for vehicule in vehiculesMenu]
+            images = [vehic.image for vehic in vehiculesMenu]
             obstacle_boom = pygame.image.load("images/cross2_obstacle.png").convert_alpha()
             
             loadImages = False
@@ -500,7 +499,8 @@ def Main ():
                 indexVehicule = 0
                 vehicule = vehicules[indexVehicule]
                 loadImages = True
-                place_1 = False
+                place_1 = False 
+                
             else:
                 one_is_placed = False
                 
@@ -520,6 +520,7 @@ def Main ():
                 vehicule = vehicules[indexVehicule]
                 loadImages = True 
                 place_2 = False
+                print (len(teamsVehicules[0]), len(teamsVehicules[1]))   
             else:
                 two_is_placed = False
         
@@ -547,16 +548,18 @@ def Main ():
             
                 vehicule.direction = direction_placement
                 
-                if loadImages:
-                    getImages(NewVehicules,cells_Size)
+                #if loadImages:
+                    #getImages(NewVehicules,cells_Size)
                 vehicule.reloadBack() 
                 fixe = map.addElement(vehicule)
 
 
-            if (fixe and click):
-                if vehicule not in vehiculeFixed:
-                    vehiculeFixed.append(vehicule)
+            if (click):
+                if vehicule not in vehiculeFixed :
+                    if fixe :
+                        vehiculeFixed.append(vehicule)
                 else:
+
                     vehiculeFixed.remove(vehicule)
                     
                 click = False
@@ -567,8 +570,6 @@ def Main ():
                 newlisteAffichage = [image.copy() for image in affichage_vehicule2]
             
             place_ships_P(player,police,newlisteAffichage,indexVehicule,largeur_fenetre,hauteur_fenetre,screen,cells_Size) 
-                
-            
             MAJImage = True
    
         elif game_over:
