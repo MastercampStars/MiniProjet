@@ -548,8 +548,8 @@ def Main ():
             
                 vehicule.direction = direction_placement
                 
-                #if loadImages:
-                    #getImages(NewVehicules,cells_Size)
+                if loadImages:
+                    getImages(teamsVehicules[indexTeam],cells_Size)
                 vehicule.reloadBack() 
                 fixe = map.addElement(vehicule)
 
