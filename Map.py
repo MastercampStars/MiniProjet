@@ -128,9 +128,9 @@ class Map:
             print("out of map")
             return True
         
-        if (vehicule.Back["x"] < 0 or vehicule.Back["x"] >= self.size["x"] or vehicule.Back["y"] < 0 or vehicule.Back["y"] >= self.size["y"]):
-            print("out of map")
-            return True
+        # if (vehicule.Back["x"] < 0 or vehicule.Back["x"] >= self.size["x"] or vehicule.Back["y"] < 0 or vehicule.Back["y"] >= self.size["y"]):
+        #     print("out of map")
+        #     return True
         
         # On supprime le bateau de la map afin de générer une matrice de la map sans le bateau que l'on nomme matrice1
         self.removeElement(lastVehicule)

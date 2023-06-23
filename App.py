@@ -439,7 +439,7 @@ def Main ():
                 game_over = False
                 for thisVehicule in team:
                     game_over = True
-                    winner = (thisVehicule.type["player"] %2  ) +1
+                    winner = (thisVehicule.type["player"]%2  ) +1
                     if thisVehicule.life > 0:
                         game_over = False
                         break
@@ -450,15 +450,51 @@ def Main ():
         # font = pygame.font.Font(None, 36)
         score1 = 0
         score2 = 0
+        dead = 0
         
 
         for y in range(len(matrice)):
             for x in range(len(matrice[y])):
                 if "player" in matrice[y][x]:
                     if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==1:
-                        score2 = score2 + 1
+                        score2 = score2 + 10
+                        if "self" in matrice[y][x] and hasattr(matrice[y][x]["self"],'life') and matrice[y][x]["self"].life == 0:
+                            dead = 2
+                            # score2 = score2 + 100
+                            # print("score2:", score2)
+                            # break
+
                     if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==2:
-                        score1 = score1 + 1
+                        score1 = score1 + 10
+                        if "self" in matrice[y][x] and hasattr(matrice[y][x]["self"],'life') and matrice[y][x]["self"].life == 0:
+                            dead = 1
+                        #     break
+                        # break
+        
+        if dead == 1:
+            # print("score1 before:", score1)
+            score1 = score1 + 100
+            # print("score1:", score1)
+        
+
+        if dead == 2:
+            # print("score2 before:", score1)
+            score2 = score2 + 100
+            # print("score2:", score2)
+
+        if score1>=100:
+            for vehicule1 in vehicules:
+                vehicule1.revive_tourelle()
+            score1 = score1 - 100
+            
+            # print("score1-100:", score1)
+
+        if score2>=100:
+            for vehicule1 in vehicules:
+                vehicule1.revive_tourelle()
+            score2 = score2 - 100
+            
+            # print("score2-100:", score2)
                     
         score_text_1 = police.render(f"P1: {score1}", True, (255, 255, 255)) #score équipe 1
         score_text_2 = police.render(f"P2: {score2}", True, (255, 255, 255)) #score équipe 2

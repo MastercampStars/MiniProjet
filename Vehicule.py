@@ -165,6 +165,14 @@ class Vehicule(Element):
                 if (self.matrice[y][x]["char"] == "f"):
                     self.matrice[y][x]["char"] = "T"
         self.map.reloadMatrice()
+        
+    def revive_tourelle(self):
+        for tourelle in self.tourelles:
+            if self.matrice[tourelle["y"]][tourelle["x"]]["char"] == "X":
+                print("found",self.matrice[tourelle["y"]][tourelle["x"]])
+                self.matrice[tourelle["y"]][tourelle["x"]]["char"] = "T"
+                return True
+            return False
 
     # Copie du bateau
     def copy(self):
