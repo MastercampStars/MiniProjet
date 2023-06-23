@@ -329,10 +329,9 @@ class Submarine (Vehicule):
         Submarine.instance += 1
         super().__init__(self.type, map, position, direction,
                          self.size, self.speed, self.tourelles)
+
     def special(self):
-        Submarine = self.copy()
-    def MoveZ(self):
-        self.map.elements.remove(self)
+
         if self.type["player"] == 1:
             self.imageLoc = "submarine.png"
 
@@ -365,8 +364,8 @@ class Submarine (Vehicule):
             for tourelle in self.tourelles:
                 if self.matrice[tourelle["y"]][tourelle["x"]]["char"] != "X":
                     self.matrice[tourelle["y"]][tourelle["x"]]["char"] = "T"
-                    self.matrice[tourelle["y"]][tourelle["x"]]["direction"] = tourelle["direction"]
-        self.map.addElement(self)
+                    self.matrice[tourelle["y"]][tourelle["x"]
+                                                ]["direction"] = tourelle["direction"]
 
 
 class Jet(Vehicule):
