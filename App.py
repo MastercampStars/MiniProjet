@@ -439,7 +439,7 @@ def Main ():
                 game_over = False
                 for thisVehicule in team:
                     game_over = True
-                    winner = (thisVehicule.type["player"] +1) %2
+                    winner = (thisVehicule.type["player"] %2  ) +1
                     if thisVehicule.life > 0:
                         game_over = False
                         break
