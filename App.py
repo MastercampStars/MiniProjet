@@ -404,12 +404,14 @@ def Main ():
             if dead == 1:
                 # print("score1 before:", score1)
                 score1 = score1 + 100
+                dead = 0
                 # print("score1:", score1)
             
 
             if dead == 2:
                 # print("score2 before:", score1)
                 score2 = score2 + 100
+                dead = 0
                 # print("score2:", score2)
             revive = False
             if score1>=100:
@@ -432,8 +434,8 @@ def Main ():
                 # print("score1-100:", score1)
 
             if score2>=100:
-                for vehicule1 in vehicules:
-                    revive = vehicule1.revive_tourelle(2)
+                for vehicule2 in vehicules:
+                    revive = vehicule2.revive_tourelle(2)
                     if revive: break 
                 if revive: 
                     if score2-100 >= 0 :
