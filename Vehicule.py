@@ -166,9 +166,9 @@ class Vehicule(Element):
                     self.matrice[y][x]["char"] = "T"
         self.map.reloadMatrice()
         
-    def revive_tourelle(self):
+    def revive_tourelle(self, player : str):
         for tourelle in self.tourelles:
-            if self.matrice[tourelle["y"]][tourelle["x"]]["char"] == "X":
+            if self.matrice[tourelle["y"]][tourelle["x"]]["char"] == "X" and self.matrice[tourelle["y"]][tourelle["x"]]["player"] == player:
                 print("found",self.matrice[tourelle["y"]][tourelle["x"]])
                 self.matrice[tourelle["y"]][tourelle["x"]]["char"] = "T"
                 self.matrice[tourelle["y"]][tourelle["x"]]["collide"] = self.type["collide"]

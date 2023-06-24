@@ -413,18 +413,35 @@ def Main ():
                 # print("score2:", score2)
             revive = False
             if score1>=100:
+                print("here we are")
                 for vehicule1 in vehicules:
-                    revive = vehicule1.revive_tourelle()
-                    if revive: break
-                if revive: score1 = score1 - 100
+                    print("No?")
+                    revive = vehicule1.revive_tourelle(1)
+                    print("revive", revive)
+                    if revive: 
+                        print("You good bro ?")
+                        break
+                if revive: 
+                    if score1-100 >= 0 :
+                        score1 = score1 - 100
+                        print("score1 +100", score1)
+                    else :
+                        score1 = 0
+                        print("score1 = 0", score1)
                 
                 # print("score1-100:", score1)
 
             if score2>=100:
                 for vehicule1 in vehicules:
-                    revive = vehicule1.revive_tourelle()
-                    if revive: break
-                if revive: score1 = score1 - 100
+                    revive = vehicule1.revive_tourelle(2)
+                    if revive: break 
+                if revive: 
+                    if score2-100 >= 0 :
+                        score2 = score2 - 100
+                        print("score2 +100", score2)
+                    else :
+                        score2 = 0
+                        print("score2 = 0", score2)
                 
                 # print("score2-100:", score2)
             
