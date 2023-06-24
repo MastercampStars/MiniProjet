@@ -171,6 +171,7 @@ class Vehicule(Element):
             if self.matrice[tourelle["y"]][tourelle["x"]]["char"] == "X":
                 print("found",self.matrice[tourelle["y"]][tourelle["x"]])
                 self.matrice[tourelle["y"]][tourelle["x"]]["char"] = "T"
+                self.matrice[tourelle["y"]][tourelle["x"]]["collide"] = self.type["collide"]
                 return True
             return False
 
@@ -193,7 +194,7 @@ class Vehicule(Element):
 class LittleBoat(Vehicule):
     size = {"x": 3, "y": 5}
     collide = ["bullet", "element"]
-    speed = 6
+    speed = 3
     imageLoc = "littleBoat.png"
     instance = 0
     tourelles = [{"x": 0, "y": 0, "direction": "up"},
@@ -213,6 +214,11 @@ class LittleBoat(Vehicule):
         LittleBoat.instance += 1
         super().__init__(self.type, map, position, direction,
                          self.size, self.speed, self.tourelles)
+    def special(self):
+        if self.maxSpeed == 3:
+            self.maxSpeed = 6
+        else:
+            self.maxSpeed = 3
 
 
 class MedicaleBoat (Vehicule):
@@ -378,7 +384,7 @@ class Submarine (Vehicule):
 
 class Jet(Vehicule):
     size = {"x": 3, "y": 3}
-    speed = 6
+    speed = 7
     collide = ["bullet"]
     instance = 0
     imageLoc = "jet.png"

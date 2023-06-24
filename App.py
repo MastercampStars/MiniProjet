@@ -119,7 +119,10 @@ def Main ():
     nb_tir=0
     nb_speciale=0
 
-
+    # Scores
+    score1 = 0
+    score2 = 0
+    dead = 0
     
     
     # ---------------------------------------------------------------Boucle principale du jeu--------------------------------------------------------------------
@@ -378,7 +381,72 @@ def Main ():
         
         
         # Mise en mouvement des bullets
-        map.reloadBullets()
+        vehiculeShooted = map.reloadBullets()
+        if vehiculeShooted != False:
+            # print("vehiculeShooted:", vehiculeShooted)
+            print ("life",vehiculeShooted.life)
+                    # font = pygame.font.Font(None, 36)
+            if vehiculeShooted.type["player"]==1:
+                score2 = score2 + 10
+                if  hasattr(vehiculeShooted,'life') and vehiculeShooted.life == 0:
+                    dead = 2
+                    # score2 = score2 + 100
+                    # print("score2:", score2)
+                    # break
+
+            if vehiculeShooted.type["player"]==2:
+                score1 = score1 + 10
+                if  hasattr(vehiculeShooted,'life') and vehiculeShooted.life == 0:
+                    dead = 1
+                #     break
+                # break
+
+            if dead == 1:
+                # print("score1 before:", score1)
+                score1 = score1 + 100
+                # print("score1:", score1)
+            
+
+            if dead == 2:
+                # print("score2 before:", score1)
+                score2 = score2 + 100
+                # print("score2:", score2)
+            revive = False
+            if score1>=100:
+                for vehicule1 in vehicules:
+                    revive = vehicule1.revive_tourelle()
+                    if revive: break
+                if revive: score1 = score1 - 100
+                
+                # print("score1-100:", score1)
+
+            if score2>=100:
+                for vehicule1 in vehicules:
+                    revive = vehicule1.revive_tourelle()
+                    if revive: break
+                if revive: score1 = score1 - 100
+                
+                # print("score2-100:", score2)
+            
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
         if len(map.bullets) > 0:
             getImages(map.bullets,cells_Size,[],[])
         
@@ -447,57 +515,10 @@ def Main ():
                     break
                 
          #---------------------------------------Affichage des scores de chaque coté de la page : ---------------------------------------
-        # font = pygame.font.Font(None, 36)
-        score1 = 0
-        score2 = 0
-        dead = 0
-        
 
-        for y in range(len(matrice)):
-            for x in range(len(matrice[y])):
-                if "player" in matrice[y][x]:
-                    if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==1:
-                        score2 = score2 + 10
-                        if "self" in matrice[y][x] and hasattr(matrice[y][x]["self"],'life') and matrice[y][x]["self"].life == 0:
-                            dead = 2
-                            # score2 = score2 + 100
-                            # print("score2:", score2)
-                            # break
-
-                    if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==2:
-                        score1 = score1 + 10
-                        if "self" in matrice[y][x] and hasattr(matrice[y][x]["self"],'life') and matrice[y][x]["self"].life == 0:
-                            dead = 1
-                        #     break
-                        # break
-        
-        if dead == 1:
-            # print("score1 before:", score1)
-            score1 = score1 + 100
-            # print("score1:", score1)
-        
-
-        if dead == 2:
-            # print("score2 before:", score1)
-            score2 = score2 + 100
-            # print("score2:", score2)
-
-        if score1>=100:
-            for vehicule1 in vehicules:
-                vehicule1.revive_tourelle()
-            score1 = score1 - 100
-            
-            # print("score1-100:", score1)
-
-        if score2>=100:
-            for vehicule1 in vehicules:
-                vehicule1.revive_tourelle()
-            score2 = score2 - 100
-            
-            # print("score2-100:", score2)
                     
-        score_text_1 = police.render(f"P1: {score1}", True, (255, 255, 255)) #score équipe 1
-        score_text_2 = police.render(f"P2: {score2}", True, (255, 255, 255)) #score équipe 2
+        score_text_2 = police.render(f"P1: {score1}", True, (255, 255, 255)) #score équipe 1
+        score_text_1 = police.render(f"P2: {score2}", True, (255, 255, 255)) #score équipe 2
         
         nb_dep_text = police.render(f"deplacements: {nb_dep}/{nb_dep_max}", True, (255, 255, 255)) #Coup par tour
         nb_tir_text = police.render(f"tirs: {nb_tir}/{nb_tir_max}", True, (255, 255, 255)) #Coup par tour

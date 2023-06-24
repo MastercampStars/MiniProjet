@@ -25,14 +25,9 @@ class Map:
     # Ajoute un element à la matrice en fonction de sa direction, de sa taille et de sa matrice et de sa position Front. 
     # C'est aussi ici que l'on gère les différentes inetractions entre les elements de la map (tire des tourelles, collision, etc...)
     def addElementToMatrice(self,element:Element):
-        if hasattr(element, 'life'):
-            newLife = 0
         # On parcours la matrice de l'element et on les entre dans la matrice de la map en fonction de la direction de l'element et de sa position Front
         for y in range(element.size["y"]):
             for x in range(element.size["x"]):
-                if hasattr(element, 'life'):
-                    if (element.matrice[y][x]["char"] != "X"):
-                        newLife += 1
                 # Calcul de la position de chaques cases de l'élément dans la matrice de la map
                 if (element.direction == "up"):
                     posX = element.Front["x"] + x
@@ -72,8 +67,7 @@ class Map:
                     bullet = Bullet({"x":posX,"y":posY},bulletDirection,element.type)
                     self.bullets.append(bullet)
                     bullet.run()
-        if hasattr(element, 'life'):
-            element.life = newLife
+
                                        
         
     # Recharge la matrice de la map avec tous ses elements
@@ -101,9 +95,13 @@ class Map:
                         newCollide.remove("bullet")
                         self.matrice[bullet.position["y"]][bullet.position["x"]]["collide"]= newCollide
                         self.matrice[bullet.position["y"]][bullet.position["x"]]["char"] = "X"
+                        if("self" in self.matrice[bullet.position["y"]][bullet.position["x"]] ):
+                            self.matrice[bullet.position["y"]][bullet.position["x"]]["self"].life -= 1
+                            return self.matrice[bullet.position["y"]][bullet.position["x"]]["self"]
                 
             if (bullet in self.bullets):
                 bullet.run()
+        return False
         
     
     # Ajoute un element a la map (bateau, obstacle, etc...)
