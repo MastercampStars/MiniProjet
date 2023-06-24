@@ -172,6 +172,7 @@ class Vehicule(Element):
                 print("found",self.matrice[tourelle["y"]][tourelle["x"]])
                 self.matrice[tourelle["y"]][tourelle["x"]]["char"] = "T"
                 self.matrice[tourelle["y"]][tourelle["x"]]["collide"] = self.type["collide"]
+                self.life += 1
                 return True
             return False
 
