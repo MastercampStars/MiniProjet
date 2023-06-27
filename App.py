@@ -750,9 +750,9 @@ def show_popup_menu(screen,cells_Size,game_font,police,images):
     police_ship = pygame.font.Font(game_font, int(cells_Size*16.5/17))
 
     text_ship1 = "Corvette : moves twice as far as other ships"
-    text_ship2 = "Medical boat : heals one of your ships"
-    text_ship3 = "tank ship : Shoots 6 bullets at a time"
-    text_ship4 = "Transporter : launches a plane that avoids collisions"
+    text_ship2 = "Medical boat : doesn't have any canons"
+    text_ship3 = "Tank ship : can change direction of its 6 canons"
+    text_ship4 = "Carrier : launches a plane that avoids collisions"
     text_ship5 = "Submarine : avoids collisions but can't blow itself up"
 
     text_ship_surface1 = police_ship.render(text_ship1, True,RED )
@@ -763,7 +763,7 @@ def show_popup_menu(screen,cells_Size,game_font,police,images):
 
     text_rect_ship_surface1 = text_ship_surface1.get_rect(center=(int(cells_Size*((730 + decallageX)/17)),int(cells_Size*((290 + decallageY)/17))))
     text_rect_ship_surface2 = text_ship_surface2.get_rect(center=(int(cells_Size*((730 + decallageX)/17)),int(cells_Size*((340 + decallageY)/17))))
-    text_rect_ship_surface3 = text_ship_surface3.get_rect(center=(int(cells_Size*((810 + decallageX)/17)),int(cells_Size*((395 + decallageY)/17))))
+    text_rect_ship_surface3 = text_ship_surface3.get_rect(center=(int(cells_Size*((870 + decallageX)/17)),int(cells_Size*((395 + decallageY)/17))))
     text_rect_ship_surface4 = text_ship_surface4.get_rect(center=(int(cells_Size*((870 + decallageX)/17)),int(cells_Size*((460 + decallageY)/17))))
     text_rect_ship_surface5 = text_ship_surface5.get_rect(center=(int(cells_Size*((810 + decallageX)/17)),int(cells_Size*((525 + decallageY)/17))))
 
