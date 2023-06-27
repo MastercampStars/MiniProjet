@@ -9,8 +9,6 @@ clock = pygame.time.Clock()
 #permet de récuperer l'angle en fonction de la direction, utile pour la rotation des images des bateaux
 
 
-
-
 def Main ():
     # Initialisation de Pygame
     pygame.init()
@@ -107,9 +105,10 @@ def Main ():
     place_2 = True
     direction_placement = "right"
     vehiculeFixed = []
-    fixVehicule = False
     affichage_vehicule1 = [vehicl.image.copy() for vehicl in teamsVehicules[0] ]
     affichage_vehicule2 = [vehicl.image.copy() for vehicl in teamsVehicules[1] ]
+    click = False
+    Tab = False
     
     nb_dep_max=5
     nb_tir_max=3
@@ -118,7 +117,10 @@ def Main ():
     nb_tir=0
     nb_speciale=0
 
-
+    # Scores
+    score1 = 0
+    score2 = 0
+    dead = 0
     
     
     # ---------------------------------------------------------------Boucle principale du jeu--------------------------------------------------------------------
@@ -139,16 +141,15 @@ def Main ():
             background_image = pygame.transform.scale(background_image, (int(largeur_fenetre),int(hauteur_fenetre)))
             gold = pygame.image.load("images/gold.png")
             gold = pygame.transform.scale(gold, (int(cells_Size*(25/17)), int(cells_Size*(25/17))))
-            teamsVehicules,players = getImages(map.elements,cells_Size,players,teamsVehicules)
             getImages(map.elements,cells_Size)
             vehicule_image = vehicule.image.copy()
             mask_surface = pygame.Surface(vehicule_image.get_size(), pygame.SRCALPHA)
             mask_surface.fill((255, 255, 255, 128)) 
             vehicule_image.blit(vehicule_image, (0, 0), special_flags=pygame.BLEND_RGBA_MULT)
             vehicule.image = pygame.transform.rotate(vehicule_image, vehicule.imageAngle - getAngle(vehicule.direction))
-            vehicules = teamsVehicules[indexTeam]
+
             police = pygame.font.Font(game_font, int(cells_Size*(20/17)))
-            images = [vehicule.image for vehicule in vehiculesMenu]
+            images = [vehic.image for vehic in vehiculesMenu]
             obstacle_boom = pygame.image.load("images/cross2_obstacle.png").convert_alpha()
             
             loadImages = False
@@ -193,12 +194,9 @@ def Main ():
             if distanceImage == 0:
                 # Capte les touches enfoncées pour définir les actions à effectuer
                 if evenement.type == pygame.MOUSEBUTTONDOWN :
-                    if one_is_placed == False or two_is_placed == False:
+                    if place_2:
                         loadImages = True
-                        if vehicule in vehiculeFixed:
-                            vehiculeFixed.remove(vehicule)
-                        else:
-                            fixVehicule = True
+                        click = True
                         
 
                 if evenement.type == pygame.KEYDOWN:
@@ -207,7 +205,7 @@ def Main ():
                             show_popup = False
                             loadImages = True
                     else :
-                        if one_is_placed == False or two_is_placed == False:
+                        if place_2:
                             if evenement.key == pygame.K_q:
                                 direction_placement = "left"
                             elif evenement.key == pygame.K_d:
@@ -224,13 +222,12 @@ def Main ():
                                 elif two_is_placed == False:
                                     two_is_placed = True
                                 
-                                indexTeam = (indexTeam+1)%len(teamsVehicules)
-                                vehicules = teamsVehicules[indexTeam]
-                                indexVehicule = 0
-                                vehicule = vehicules[indexVehicule]
-                                loadImages = True  
+                                
                                 
                             elif evenement.key == pygame.K_TAB:
+                                if vehicule not in vehiculeFixed:
+                                    if vehicule in map.elements:
+                                        map.elements.remove(vehicule)
                                 indexVehicule = (indexVehicule+1)%len(vehicules)
                                 vehicule = vehicules[indexVehicule]
                                 loadImages = True  
@@ -382,7 +379,75 @@ def Main ():
         
         
         # Mise en mouvement des bullets
-        map.reloadBullets()
+        vehiculeShooted = map.reloadBullets()
+        if vehiculeShooted != False:
+            # print("vehiculeShooted:", vehiculeShooted)
+            print ("life",vehiculeShooted.life)
+                    # font = pygame.font.Font(None, 36)
+            if vehiculeShooted.type["player"]==1:
+                score2 = score2 + 10
+                if  hasattr(vehiculeShooted,'life') and vehiculeShooted.life == 0:
+                    dead = 2
+                    # score2 = score2 + 100
+                    # print("score2:", score2)
+                    # break
+
+            if vehiculeShooted.type["player"]==2:
+                score1 = score1 + 10
+                if  hasattr(vehiculeShooted,'life') and vehiculeShooted.life == 0:
+                    dead = 1
+                #     break
+                # break
+
+            if dead == 1:
+                # print("score1 before:", score1)
+                score1 = score1 + 100
+                dead = 0
+                # print("score1:", score1)
+            
+
+            if dead == 2:
+                # print("score2 before:", score1)
+                score2 = score2 + 100
+                dead = 0
+                # print("score2:", score2)
+            revive = False
+            if score1>=100:
+                print("here we are")
+                for vehicule1 in vehicules:
+                    print("No?")
+                    revive = vehicule1.revive_tourelle(1)
+                    print("revive", revive)
+                    if revive: 
+                        print("You good bro ?")
+                        break
+                if revive: 
+                    if score1-100 >= 0 :
+                        score1 = score1 - 100
+                        print("score1 +100", score1)
+                    else :
+                        score1 = 0
+                        print("score1 = 0", score1)
+                
+                # print("score1-100:", score1)
+
+            if score2>=100:
+                for vehicule2 in vehicules:
+                    revive = vehicule2.revive_tourelle(2)
+                    if revive: break 
+                if revive: 
+                    if score2-100 >= 0 :
+                        score2 = score2 - 100
+                        print("score2 +100", score2)
+                    else :
+                        score2 = 0
+                        print("score2 = 0", score2)
+                
+                # print("score2-100:", score2)
+            
+        
+        
+        
         if len(map.bullets) > 0:
             getImages(map.bullets,cells_Size,[],[])
         
@@ -443,7 +508,7 @@ def Main ():
                 game_over = False
                 for thisVehicule in team:
                     game_over = True
-                    winner = (thisVehicule.type["player"] +1) %2
+                    winner = (thisVehicule.type["player"]%2  ) +1
                     if thisVehicule.life > 0:
                         game_over = False
                         break
@@ -451,22 +516,18 @@ def Main ():
                     break
                 
          #---------------------------------------Affichage des scores de chaque coté de la page : ---------------------------------------
-        # font = pygame.font.Font(None, 36)
-        score1 = 0
-        score2 = 0
-        
 
-        for y in range(len(matrice)):
-            for x in range(len(matrice[y])):
-                if "player" in matrice[y][x]:
-                    if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==1:
-                        score2 = score2 + 1
-                    if matrice[y][x]["char"] == "X" and matrice[y][x]["player"]==2:
-                        score1 = score1 + 1
                     
-        score_text_1 = police.render(f"P1: {score1}", True, (255, 255, 255)) #score équipe 1
-        score_text_2 = police.render(f"P2: {score2}", True, (255, 255, 255)) #score équipe 2
+        score_text_2 = police.render(f"P1: {score1}", True, (255, 255, 255)) #score équipe 1
+        score_text_1 = police.render(f"P2: {score2}", True, (255, 255, 255)) #score équipe 2
+        
+        nb_dep_text = police.render(f"deplacements: {nb_dep}/{nb_dep_max}", True, (255, 255, 255)) #Coup par tour
+        nb_tir_text = police.render(f"tirs: {nb_tir}/{nb_tir_max}", True, (255, 255, 255)) #Coup par tour
+        nb_speciale_text = police.render(f"speciale: {nb_speciale}/{nb_speciale_max}", True, (255, 255, 255)) #Coup par tour
 
+        screen.blit(nb_dep_text, (int(cells_Size*(200/17)), int(cells_Size*(10/17))))
+        screen.blit(nb_tir_text, (int(cells_Size*(200/17)), int(cells_Size*(30/17))))
+        screen.blit(nb_speciale_text, (int(cells_Size*(200/17)), int(cells_Size*(50/17))))
 
         
         screen.blit(score_text_1, (int(cells_Size*(10/17)), int(cells_Size*(20/17))))
@@ -478,58 +539,95 @@ def Main ():
 
         menu_text = police.render(f"Press M for Menu", True, (255, 255, 255)) #score équipe 2
         text_width_menu = menu_text.get_width()
-        screen.blit(menu_text, ((largeur_fenetre  - text_width_menu)// 2, 20))
+        screen.blit(menu_text, ((largeur_fenetre  - text_width_menu)// 2, cells_Size*(20/17)))
         #--------------------------------------- Fin Affichage des scores de chaque coté de la page : ---------------------------------------
 
              
-        if one_is_placed:
-            place_1 = False
-        if two_is_placed:
-            place_2 = False
+             
+        if one_is_placed and place_1:
+            if len(vehiculeFixed) !=0:
+                if vehicule not in vehiculeFixed:
+                    if vehicule in map.elements:
+                        map.elements.remove(vehicule)
+                
+                teamsVehicules[indexTeam] = vehiculeFixed
+                vehiculeFixed = []       
+                indexTeam = (indexTeam+1)%len(teamsVehicules)
+                vehicules = teamsVehicules[indexTeam]
+                indexVehicule = 0
+                vehicule = vehicules[indexVehicule]
+                loadImages = True
+                place_1 = False 
+                
+            else:
+                one_is_placed = False
+                
+            
+                
+        if two_is_placed and place_2:
+            if len(vehiculeFixed) !=0:
+                if vehicule not in vehiculeFixed:
+                    if vehicule in map.elements:
+                        map.elements.remove(vehicule)
+                
+                teamsVehicules[indexTeam] = vehiculeFixed
+                vehiculeFixed = []       
+                indexTeam = (indexTeam+1)%len(teamsVehicules)
+                vehicules = teamsVehicules[indexTeam]
+                indexVehicule = 0
+                vehicule = vehicules[indexVehicule]
+                loadImages = True 
+                place_2 = False
+                print (len(teamsVehicules[0]), len(teamsVehicules[1]))   
+            else:
+                two_is_placed = False
+        
+
                 
         if show_popup:
             show_popup_menu(screen,cells_Size,game_font,police,images)      
         
 
-        elif place_1 or place_2:
-            player = vehicule.type["player"]
-                
-            if vehicule in map.elements:
-                if not vehicule in vehiculeFixed:
-                    map.elements.remove(vehicule)
-            
+        elif place_2:
+            player = indexTeam + 1 
             if not vehicule in vehiculeFixed:
+                if vehicule in map.elements:
+                    map.elements.remove(vehicule)
+                
                 if player == 1:
                     if mouse_x > 50 * cells_Size :
                         vehicule.Front["x"] = int(mouse_x//cells_Size)
                         vehicule.Front["y"] = int(mouse_y//cells_Size)
                         
- 
                 if player == 2:
                     if mouse_x < 50 * cells_Size :
                         vehicule.Front["x"] = int(mouse_x//cells_Size)
                         vehicule.Front["y"] = int(mouse_y//cells_Size)
             
                 vehicule.direction = direction_placement
+                
                 if loadImages:
-                    getImages(NewVehicules,cells_Size)
-                Image_player = True
-                vehicule.reloadBack()  
+                    getImages(teamsVehicules[indexTeam],cells_Size)
+                vehicule.reloadBack() 
                 fixe = map.addElement(vehicule)
-                if (fixe and fixVehicule):
-                    vehiculeFixed.append(vehicule)
-                    fixVehicule = False
-                    if teamsVehicules[(indexTeam+1)%len(teamsVehicules)] not in vehiculeFixed:
-                        indexVehicule = (indexVehicule+1)%len(vehicules)
-                        vehicule = vehicules[indexVehicule]
+
+
+            if (click):
+                if vehicule not in vehiculeFixed :
+                    if fixe :
+                        vehiculeFixed.append(vehicule)
+                else:
+
+                    vehiculeFixed.remove(vehicule)
+                    
+                click = False
+            
             if (player == 1):
                 newlisteAffichage = [image.copy() for image in affichage_vehicule1]
             if (player == 2):
                 newlisteAffichage = [image.copy() for image in affichage_vehicule2]
             
             place_ships_P(player,police,newlisteAffichage,indexVehicule,largeur_fenetre,hauteur_fenetre,screen,cells_Size) 
-                
-                
             MAJImage = True
    
         elif game_over:
@@ -634,9 +732,9 @@ def show_popup_menu(screen,cells_Size,game_font,police,images):
     police_ship = pygame.font.Font(game_font, int(cells_Size*16.5/17))
 
     text_ship1 = "Corvette : moves twice as far as other ships"
-    text_ship2 = "Medical boat : heals one of your ships"
-    text_ship3 = "tank ship : Shoots 6 bullets at a time"
-    text_ship4 = "Transporter : launches a plane that avoids collisions"
+    text_ship2 = "Medical boat : doesn't have any canons"
+    text_ship3 = "Tank ship : can change direction of its 6 canons"
+    text_ship4 = "Carrier : launches a plane that avoids collisions"
     text_ship5 = "Submarine : avoids collisions but can't blow itself up"
 
     text_ship_surface1 = police_ship.render(text_ship1, True,RED )
@@ -647,7 +745,7 @@ def show_popup_menu(screen,cells_Size,game_font,police,images):
 
     text_rect_ship_surface1 = text_ship_surface1.get_rect(center=(int(cells_Size*((730 + decallageX)/17)),int(cells_Size*((290 + decallageY)/17))))
     text_rect_ship_surface2 = text_ship_surface2.get_rect(center=(int(cells_Size*((730 + decallageX)/17)),int(cells_Size*((340 + decallageY)/17))))
-    text_rect_ship_surface3 = text_ship_surface3.get_rect(center=(int(cells_Size*((810 + decallageX)/17)),int(cells_Size*((395 + decallageY)/17))))
+    text_rect_ship_surface3 = text_ship_surface3.get_rect(center=(int(cells_Size*((870 + decallageX)/17)),int(cells_Size*((395 + decallageY)/17))))
     text_rect_ship_surface4 = text_ship_surface4.get_rect(center=(int(cells_Size*((870 + decallageX)/17)),int(cells_Size*((460 + decallageY)/17))))
     text_rect_ship_surface5 = text_ship_surface5.get_rect(center=(int(cells_Size*((810 + decallageX)/17)),int(cells_Size*((525 + decallageY)/17))))
 
@@ -703,7 +801,9 @@ def place_ships_P(player,police,images,index,largeur_fenetre,hauteur_fenetre,scr
     transparent_black = (0, 0, 0, 228)  # Semi-transparent black
             
     text = police.render("Pick a ship and place it", True, (255, 255, 255))
-    text1 = police.render("Press P to validate", True, (255, 255, 255))
+    text1 = police.render("Press TAB to select", True, (255, 255, 255))
+    text2 = police.render("Press P to validate", True, (255, 255, 255))
+    
 
     # Calculate the left half of the screen
     left_half_rect = pygame.Rect(0, 0, largeur_fenetre // 2, hauteur_fenetre)
@@ -748,9 +848,12 @@ def place_ships_P(player,police,images,index,largeur_fenetre,hauteur_fenetre,scr
         
     if player == 1:
         text_rect1 = text1.get_rect(midtop=(left_half_rect.centerx, int(670*cells_Size/17)))
+        text_rect2 = text1.get_rect(midtop=(left_half_rect.centerx, int(690*cells_Size/17)))
     elif player == 2:
-        text_rect1 = text1.get_rect(midtop=(right_half_rect.centerx, int(670*cells_Size/17)))  
+        text_rect1 = text1.get_rect(midtop=(right_half_rect.centerx, int(670*cells_Size/17))) 
+        text_rect2 = text1.get_rect(midtop=(right_half_rect.centerx, int(690*cells_Size/17))) 
     screen.blit(text1, text_rect1)
+    screen.blit(text2, text_rect2)
 #--------------------------------------------------Open popup gameover----------------------------------------------------------------------------
 def show_game_over_menu(winner,police,game_font,screen) :
     RED = (255,0,0)

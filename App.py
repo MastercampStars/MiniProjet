@@ -450,22 +450,6 @@ def Main ():
         
         
         
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         if len(map.bullets) > 0:
             getImages(map.bullets,cells_Size,[],[])
         
